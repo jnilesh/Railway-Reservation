@@ -1,0 +1,104 @@
+*&---------------------------------------------------------------------*
+*& Report ZRAIL_FORM_DRIVER
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZRAIL_FORM_DRIVER.
+
+TABLES:ZG6TRAIN_BOOKING.
+
+TYPES: ty_outputparams type sfpoutputparams,
+       ty_docparams type sfpdocparams.
+
+data wa_outputparams type sfpoutputparams.
+DATA :RITTAB TYPE TABLE OF ZG6TRAIN_BOOKING,
+      WA TYPE ZG6TRAIN_BOOKING,
+
+      RUITAB TYPE TABLE OF ZG6_USER_REG,
+      WA1 TYPE ZG6_USER_REG.
+data wa_docparams type sfpdocparams.
+DATA gv_fm_name type rs38l_fnam.
+
+DATA TICNO TYPE ZG6TRAIN_BOOKING-TICKET_NO.
+IMPORT TICNO FROM MEMORY ID 'IDNO'.
+
+START-OF-SELECTION.
+
+wa_outputparams-DEVICE = 'PRINTER'.
+wa_outputparams-DEST  = 'LP01'.
+wa_outputparams-NODIALOG = 'X'.
+wa_outputparams-PREVIEW  = 'X'.
+
+CALL FUNCTION 'FP_JOB_OPEN'
+  CHANGING
+    IE_OUTPUTPARAMS       = wa_outputparams
+* EXCEPTIONS
+*   CANCEL                = 1
+*   USAGE_ERROR           = 2
+*   SYSTEM_ERROR          = 3
+*   INTERNAL_ERROR        = 4
+*   OTHERS                = 5
+          .
+IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+ENDIF.
+CALL FUNCTION 'FP_FUNCTION_MODULE_NAME'
+  EXPORTING
+   I_NAME                     = 'ZRAIL_TICKET_FOR'    " Adobe form name.
+ IMPORTING
+   E_FUNCNAME                 = gv_fm_name
+*   E_INTERFACE_TYPE           =
+*   EV_FUNCNAME_INBOUND        =
+          .
+wa_docparams-langu = 'E'.
+wa_docparams-country = 'IN'.
+
+SELECT TICKET_NO
+TRAIN_NO
+TRAIN_NAME
+SOURCE
+DESTINATION
+DOJ
+AADHAR_PAN
+NO_OF_PASSENGERS
+USERID
+TOT_FARE FROM ZG6TRAIN_BOOKING INTO CORRESPONDING FIELDS OF TABLE RITTAB
+  WHERE TICKET_NO EQ TICNO.
+    LOOP AT RITTAB INTO WA.
+      ENDLOOP.
+
+* SELECT * FROM ZG6_USER_REG INTO TABLE RUITAB
+*   WHERE USER_ID = WA-USERID.
+*   LOOP AT RUITAB INTO WA1.
+*     ENDLOOP.
+*MESSAGE WA1-NAME TYPE 'I'.
+CALL FUNCTION gv_fm_name
+  EXPORTING
+  /1BCDWB/DOCPARAMS        = wa_docparams
+    rittab                   = RITTAB
+    ticno                    = TICNO
+* IMPORTING
+*   /1BCDWB/FORMOUTPUT       =
+* EXCEPTIONS
+*   USAGE_ERROR              = 1
+*   SYSTEM_ERROR             = 2
+*   INTERNAL_ERROR           = 3
+*   OTHERS                   = 4
+          .
+IF sy-subrc <> 0.
+* Implement suitable error handling here
+ENDIF.
+
+
+  CALL FUNCTION 'FP_JOB_CLOSE'
+* IMPORTING
+*   E_RESULT             =
+* EXCEPTIONS
+*   USAGE_ERROR          = 1
+*   SYSTEM_ERROR         = 2
+*   INTERNAL_ERROR       = 3
+*   OTHERS               = 4
+          .
+IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+ENDIF.

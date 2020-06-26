@@ -1,0 +1,260 @@
+class CL_GUI_CFW definition
+  public
+  abstract
+  final
+  create public .
+
+*"* public components of class CL_GUI_CFW
+*"* do not include other source files here!!!
+public section.
+
+  constants DOCK_CHANGE_CREATE type I value 1. "#EC NOTEXT
+  constants DOCK_CHANGE_DOCK type I value 3. "#EC NOTEXT
+  constants DOCK_CHANGE_FREE type I value 4. "#EC NOTEXT
+  constants DOCK_CHANGE_INVISIBLE type I value 5. "#EC NOTEXT
+  constants DOCK_CHANGE_VISIBLE type I value 6. "#EC NOTEXT
+  constants DOCK_CHANGE_EXTENSION type I value 7. "#EC NOTEXT
+  constants DOCK_CHANGE_METRIC type I value 8. "#EC NOTEXT
+  constants MSG_ERR type SYMSGNO value 999. "#EC NOTEXT
+  constants MSG_OK type SYMSGNO value 000. "#EC NOTEXT
+  constants FALSE type CHAR1 value SPACE. "#EC NOTEXT
+  constants TRUE type CHAR1 value 'X'. "#EC NOTEXT
+  constants DYNPRO_DEFAULT type I value -1. "#EC NOTEXT
+  constants MAIN_WINDOW type I value 0. "#EC NOTEXT
+  constants DYNPRO_1 type I value 11. "#EC NOTEXT
+  constants DYNPRO_2 type I value 12. "#EC NOTEXT
+  constants DYNPRO_3 type I value 13. "#EC NOTEXT
+  constants DYNPRO_4 type I value 14. "#EC NOTEXT
+  constants DYNPRO_5 type I value 15. "#EC NOTEXT
+  constants DYNPRO_6 type I value 16. "#EC NOTEXT
+  constants DYNPRO_7 type I value 17. "#EC NOTEXT
+  constants DYNPRO_8 type I value 18. "#EC NOTEXT
+  constants DYNPRO_9 type I value 19. "#EC NOTEXT
+  constants TOP_WINDOW type I value 33. "#EC NOTEXT
+  constants DESKTOP_WINDOW type I value 99. "#EC NOTEXT
+  constants RC_FOUND type I value 0. "#EC NOTEXT
+  constants RC_UNKNOWN type I value 1. "#EC NOTEXT
+  constants RC_FCODE type I value 2. "#EC NOTEXT
+  constants RC_NOEVENT type I value -1. "#EC NOTEXT
+  constants RC_NODISPATCH type I value 3. "#EC NOTEXT
+  constants RC_INVALID type I value -100. "#EC NOTEXT
+  constants RC_POSTED type I value -101. "#EC NOTEXT
+  constants RC_WRONG_STATE type I value -102. "#EC NOTEXT
+  constants DYNPRO_0 type I value 10. "#EC NOTEXT
+  constants REASON_NO_BATCH type I value 5. "#EC NOTEXT
+  constants REASON_NO_GUI type I value 6. "#EC NOTEXT
+  constants FLUSH_SITUATION_PBO type I value 0. "#EC NOTEXT
+  constants FLUSH_SITUATION_SYSTEM_EVENTS type I value 1. "#EC NOTEXT
+  constants FLUSH_SITUATION_INPUTSTREAM type I value 2. "#EC NOTEXT
+  constants DOCK_CHANGE_LINK type I value 2. "#EC NOTEXT
+  class-data SYSTEM_STATE type CHAR1 read-only .
+  class-data REASON_NO_INIT type I .
+  constants PROPERTY_ALL_PROPS type I value 1000. "#EC NOTEXT
+
+  class-events FLUSH_ERROR
+    exporting
+      value(DYNPRO_PROGRAM) type SYREPID
+      value(DYNPRO_NUMBER) type SYDYNNR
+      value(SITUATION) type I .
+  class-events CC_ON_DYNPRO_LOAD
+    exporting
+      value(PROGRAM) type SYREPID optional
+      value(DYNNR) type SYDYNNR optional
+      value(STACKLEVEL) type I optional
+      value(MODAL_LEVEL) type I optional .
+  class-events CC_CLEANUP
+    exporting
+      value(STACKLEVEL) type I optional .
+
+  class-methods CLASS_CONSTRUCTOR .
+  class-methods GET_DOCKING_RATIO
+    importing
+      !DOCK type REF TO CL_GUI_DOCKING_CONTAINER
+    exporting
+      !RATIO type I
+    exceptions
+      NOT_AVAILABLE .
+  class-methods ADD_OBJECT
+    importing
+      !REF type ref to CL_GUI_OBJECT .
+  class-methods DISPATCH
+    exporting
+      value(RETURN_CODE) type I .
+  class-methods DISPATCH_SYSTEM_EVENTS
+    importing
+      value(OK_CODE) type SYUCOMM
+    exporting
+      value(RETURN_CODE) type I
+      value(RETURN_FUNCTION) type C .
+  class-methods DOCKING_CHANGE_NOTIFY
+    importing
+      !REF type ref to CL_GUI_CONTAINER
+      !CHANGE_KIND type I
+      !PROGRAM type SYREPID optional
+      !DYNNR type SYDYNNR optional
+      value(DOCKING_SIDE) type I optional
+      !EXTENSION type I optional
+      !METRIC type I optional
+      !RATIO type I optional
+      !SHELLSTYLE type I optional
+    exporting
+      !NEW_EXTENSION type I
+    exceptions
+      INVALID_PARAMETERS .
+  class-methods DYNP_DOCKINGS_INIT .
+  class-methods END_OF_DYNPRO_NOTIFICATION .
+  class-methods END_OF_IMODE_NOTIFICATION .
+  class-methods FIRE_FLUSH_ERROR
+    importing
+      value(SITUATION) type I default FLUSH_SITUATION_PBO .
+  class-methods FLUSH
+    exceptions
+      CNTL_SYSTEM_ERROR
+      CNTL_ERROR .
+  class-methods GET_CURRENT_EVENT_OBJECT
+    returning
+      value(EVENT_OBJECT) type ref to CL_GUI_EVENT .
+  class-methods GET_LAST_FOCUS_SHELL
+    exporting
+      !FOCUS_SHELL type I .
+  type-pools CNTO .
+  class-methods GET_LIFETIME_INFO
+    importing
+      value(REF) type ref to CL_GUI_CONTROL
+    exporting
+      value(LIFETIME_INFO) type CNTO_LIFETIME_INFO
+    exceptions
+      LIFETIME_ERROR .
+  class-methods GET_LIVING_DYNPRO_CONTROLS
+    exporting
+      value(CONTROL_LIST) type CNTO_CONTROL_LIST .
+  class-methods GET_SUBSCRIBER_BY_ID
+    importing
+      value(SHELLID) type I
+    exporting
+      !SUBSCRIBER type ref to CL_GUI_CONTROL
+    exceptions
+      CNTL_ERROR .
+  class-methods INVALIDATE_CACHE
+    importing
+      !CONTROL type ref to CL_GUI_OBJECT .
+  class-methods IS_ALIVE
+    importing
+      value(REF) type ref to CL_GUI_CONTROL
+    returning
+      value(STATE) type I .
+  class-methods IS_CACHE_VALID
+    importing
+      !CONTROL type ref to CL_GUI_OBJECT
+    returning
+      value(VALID) type CHAR01 .
+  class-methods MANAGE_VISIBILITY
+    importing
+      value(STACKPOS) type I default -1 .
+  class-methods REGISTER_CACHED_CONTROL
+    importing
+      !CONTROL type ref to CL_GUI_OBJECT .
+  class-methods UNREGISTER_FLUSH_NOTIFY
+    importing
+      !REF type ref to IF_FLUSH_NOTIFY
+    exceptions
+      WRONG_SYSTEM_STATE .
+  class-methods REGISTER_LIFETIME
+    importing
+      value(REF) type ref to CL_GUI_CONTROL
+      value(IS_CONTAINER) type C optional
+      !CLSID type C optional
+      !PROGRAM type SYREPID optional
+      !DYNNR type SYDYNNR optional .
+  type-pools CNTL .
+  class-methods REGISTER_SYSTEMEVENTS
+    importing
+      value(SHELLID) type I
+      !SYSTEMEVENTS type CNTL_EVENTS .
+  class-methods STOP
+    exceptions
+      CNTL_ERROR
+      CNTL_SYSTEM_ERROR .
+  class-methods SUBSCRIBE
+    importing
+      !SHELLID type I
+      !REF type ref to CL_GUI_CONTROL .
+  class-methods COMPUTE_DYNP_FROM_PIXELS
+    importing
+      !X_OR_Y type CHAR01
+      !IN type I
+    returning
+      value(OUT) type I .
+  class-methods UNREGISTER_CACHED_CONTROL
+    importing
+      !CONTROL type ref to CL_GUI_OBJECT .
+  class-methods REMOVE_OBJECT
+    importing
+      !REF type ref to CL_GUI_OBJECT .
+  class-methods REGISTER_FLUSH_NOTIFY
+    importing
+      !REF type ref to IF_FLUSH_NOTIFY
+    exceptions
+      WRONG_SYSTEM_STATE
+      ALREADY_REGISTERED .
+  class-methods COMPUTE_METRIC_FROM_DYNP
+    importing
+      !METRIC type I default CL_GUI_CONTROL=>METRIC_DEFAULT
+      !X_OR_Y type CHAR01
+      !IN type I
+    returning
+      value(OUT) type I .
+  class-methods SYNC_DOCKERS .
+  class-methods SET_NEW_OK_CODE
+    importing
+      !NEW_CODE type SYUCOMM
+    exporting
+      value(RC) type I .
+  class-methods SET_VISIBLE_NOTIFICATION
+    importing
+      value(REF) type ref to CL_GUI_CONTROL
+      value(VISIBLE) type C .
+  class-methods UNREGISTER_LIFETIME
+    importing
+      value(REF) type ref to CL_GUI_CONTROL .
+  class-methods START
+    exceptions
+      CNTL_ERROR
+      CNTL_SYSTEM_ERROR .
+  class-methods UNSUBSCRIBE
+    importing
+      !REF type ref to CL_GUI_CONTROL .
+  class-methods UPDATE_VIEW
+    importing
+      !CALLED_BY_SYSTEM type SYCHAR01 optional
+    exceptions
+      CNTL_SYSTEM_ERROR
+      CNTL_ERROR .
+  class-methods VALIDATE_ALL_CACHES .
+  class-methods NOTIFY_BEFORE_FLUSH .
+  class-methods GET_METRIC_FACTORS
+    returning
+      value(METRIC_FACTORS) type CNTL_METRIC_FACTORS .
+  class-methods COMPUTE_PIXEL_FROM_METRIC
+    importing
+      !METRIC type I default CL_GUI_CONTROL=>METRIC_DEFAULT
+      !X_OR_Y type CHAR01
+      !IN type I
+    returning
+      value(OUT) type I .
+  class-methods FIRE_CC_INIT
+    importing
+      value(PROGRAM) type SYREPID optional
+      value(DYNNR) type SYDYNNR optional
+      value(STACKLEVEL) type I optional
+      value(MODAL_LEVEL) type I optional .
+  class-methods FIRE_CC_CLEANUP
+    importing
+      value(STACKLEVEL) type I optional .
+  class-methods GUI_DATA_REQUEST
+    for event GUI_DATA_REQUEST of CL_GUI_PROPS_CONSUMER .
+  class-methods GET_LIVING_CONTROL_COUNT
+    returning
+      value(COUNT) type I .
+  type-pools CNTX .
+  class CL_GUI_DOCKING_CONTAINER definition load .

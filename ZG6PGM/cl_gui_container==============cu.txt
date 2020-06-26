@@ -1,0 +1,87 @@
+class CL_GUI_CONTAINER definition
+  public
+  inheriting from CL_GUI_CONTROL
+  create public .
+
+*"* public components of class CL_GUI_CONTAINER
+*"* do not include other source files here!!!
+public section.
+
+  class-data DEFAULT_SCREEN type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN0 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN1 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN2 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN3 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN4 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN5 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN6 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN7 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN8 type ref to CL_GUI_CONTAINER read-only .
+  class-data SCREEN9 type ref to CL_GUI_CONTAINER read-only .
+  class-data DESKTOP type ref to CL_GUI_CONTAINER read-only .
+  type-pools CNTO .
+  data CHILDREN type CNTO_CONTROL_LIST read-only .
+  constants CONTAINER_TYPE_SIMPLE type I value 1. "#EC NOTEXT
+  constants CONTAINER_TYPE_CUSTOM type I value 2. "#EC NOTEXT
+  constants CONTAINER_TYPE_DOCKING type I value 3. "#EC NOTEXT
+  constants CONTAINER_TYPE_EASY_SPLITTER type I value 4. "#EC NOTEXT
+  constants CONTAINER_TYPE_SPLITTER type I value 5. "#EC NOTEXT
+  constants CONTAINER_TYPE_DIALOGBOX type I value 6. "#EC NOTEXT
+
+  methods GET_CONTAINER_TYPE
+    returning
+      value(CONTAINER_TYPE) type I .
+  class-methods CLASS_CONSTRUCTOR .
+  class-methods RESIZE .
+  methods GET_INNER_WIDTH
+    exporting
+      !INNER_WIDTH type I
+    exceptions
+      CNTL_ERROR .
+  methods LINK
+    importing
+      value(REPID) type SYREPID optional
+      value(DYNNR) type SYDYNNR optional
+      value(CONTAINER) type C optional
+    exceptions
+      CNTL_ERROR
+      CNTL_SYSTEM_ERROR
+      LIFETIME_DYNPRO_DYNPRO_LINK .
+  methods CONSTRUCTOR
+    importing
+      value(CLSID) type C
+      value(PARENT) type ref to CL_GUI_CONTAINER optional
+      value(STYLE) type I optional
+      value(DYNNR) type SYDYNNR optional
+      value(REPID) type SYREPID optional
+      value(CONTAINER_NAME) type C optional
+      value(LIFETIME) type I default lifetime_default
+      value(AUTOALIGN) type C optional
+      value(NO_AUTODEF_PROGID_DYNNR) type C optional
+      value(NAME) type STRING optional
+    exceptions
+      CNTL_ERROR
+      CNTL_SYSTEM_ERROR
+      CREATE_ERROR
+      LIFETIME_ERROR
+      LIFETIME_DYNPRO_DYNPRO_LINK
+      LIFETIME_DYNPRO_ILLEGAL_PARENT .
+  methods GET_LINK_INFO
+    returning
+      value(LINK_INFO) type CFW_LINK .
+  methods GET_INNER_HEIGHT
+    exporting
+      !INNER_HEIGHT type I
+    exceptions
+      CNTL_ERROR .
+  methods SET_MODE_FOR_ALL
+    importing
+      value(MODE) type I
+    exceptions
+      CNTL_ERROR
+      CNTL_SYSTEM_ERROR .
+
+  methods FINALIZE
+    redefinition .
+  methods FREE
+    redefinition .

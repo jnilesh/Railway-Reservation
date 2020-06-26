@@ -1,0 +1,26 @@
+class CX_SY_DYN_CALL_ILLEGAL_CLASS definition
+  public
+  inheriting from CX_SY_DYN_CALL_ERROR
+  final
+  create public .
+
+*"* public components of class CX_SY_DYN_CALL_ILLEGAL_CLASS
+*"* do not include other source files here!!!
+public section.
+
+  constants ABSTRACT_CLASS type SOTR_CONC
+ value '0573CD3BE9663357E10000000A11447B'. "#EC NOTEXT
+  constants CX_SY_DYN_CALL_ILLEGAL_CLASS type SOTR_CONC
+ value 'F972CD3BE9663357E10000000A11447B'. "#EC NOTEXT
+  constants UNKNOWN_CLASS type SOTR_CONC
+ value 'FF72CD3BE9663357E10000000A11447B'. "#EC NOTEXT
+
+  methods CONSTRUCTOR
+    importing
+      !TEXTID like TEXTID optional
+      !PREVIOUS like PREVIOUS optional
+      value(CLASSNAME) type STRING optional
+      value(METHODNAME) type STRING optional
+      value(FUNCTION) type STRING optional
+      value(FORM) type STRING optional
+      value(PROGNAME) type STRING optional .

@@ -1,0 +1,46 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0704I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0704  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0704 INPUT.
+  TABLES ZG6TRAIN_BOOKING.
+  DATA TICNO TYPE ZG6TRAIN_BOOKING-TICKET_NO.
+  DATA RRITAB TYPE TABLE OF ZG6TRAIN_BOOKING.
+  DATA RFITAB TYPE TABLE OF ZG6FOOD_BOOKING.
+
+  CASE SY-UCOMM.
+
+    WHEN'BACK'.
+      LEAVE TO SCREEN 0350.
+
+      WHEN'GFEED'.
+      LEAVE TO SCREEN 750.
+
+    WHEN 'SHOW'.
+      TICNO =  TICNO1.
+
+      SELECT TICKET_NO
+         FROM ZG6TRAIN_BOOKING INTO TABLE RRITAB WHERE TICKET_NO = TICNO.
+      IF SY-SUBRC = 0.
+        EXPORT TICNO TO MEMORY ID 'IDNO'.
+        SUBMIT ZRAIL_FORM_DRIVER  AND RETURN .
+      ELSE.
+        MESSAGE 'NO TICKET ID FOUND' TYPE 'I'.
+      ENDIF.
+    WHEN 'SHOWF'.
+      SELECT TICKET_NO
+        FROM ZG6FOOD_BOOKING INTO TABLE RFITAB WHERE TICKET_NO = TICNO.
+      IF SY-SUBRC = 0.
+        TICNO = TICNO1.
+        EXPORT TICNO TO MEMORY ID 'IDNO1'.
+        SUBMIT ZFOOD_FORM_DRIVER  AND RETURN .
+      ELSE.
+        MESSAGE 'NO TICKET ID FOUND' TYPE 'I'.
+
+      ENDIF.
+  ENDCASE.
+ENDMODULE.

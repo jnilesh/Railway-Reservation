@@ -1,0 +1,30 @@
+*&---------------------------------------------------------------------*
+*& Include ZG6_RECORDING_TOP                                 Module Pool      ZG6_RECORDING
+*&
+*&---------------------------------------------------------------------*
+PROGRAM ZG6_RECORDING.
+
+ DATA WA_TRAIN TYPE ZG6TRAIN_LIST.
+
+ DATA OK_CODE TYPE SY-UCOMM.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0100  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0100 INPUT.
+CASE OK_CODE.
+    WHEN 'SUBMIT'.
+      INSERT  ZG6TRAIN_list from wa_train .
+      IF SY-SUBRC = 0 .
+        MESSAGE 'DATA INSERTED SUCCESSFULLY' TYPE 'I'.
+ENDIF.
+    WHEN 'CLEAR'.
+      clear wa_train.
+
+    WHEN 'EXIT'.
+      LEAVE PROGRAM.
+
+
+  ENDCASE.
+ENDMODULE.

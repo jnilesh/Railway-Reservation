@@ -1,0 +1,80 @@
+*&---------------------------------------------------------------------*
+*& Report ZG6RAIL_TRAILISTALV_REP
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZG6RAIL_TRAILISTALV_REP.
+TYPE-POOLS: SLIS.
+TABLES: ZG6TRAIN_LIST.
+
+TYPES: BEGIN OF TY_TRNLIST,
+       TRAIN_NO TYPE ZG6TRNNO,
+       TRAIN_NAME TYPE ZG6TRNNAME1,
+       TRAIN_TYPE TYPE ZG6TRNTYPE,
+       RUNDAYS TYPE ZG6RUNDAYS1,
+       DEPT_TIME TYPE ZG6DEPTIME,
+       ARR_TIME TYPE ZG6ARRTIME,
+       SOURCE TYPE ZG6SRCSTN,
+       DESTINATION TYPE ZG6DSTNSTN,
+       PRICE TYPE ZG6TPRICE,
+       END OF TY_TRNLIST.
+
+DATA: IT_TRNLIST TYPE TABLE OF TY_TRNLIST,
+      WA_TRNLIST TYPE TY_TRNLIST.
+
+DATA: IT_LISTHEADER TYPE SLIS_T_LISTHEADER,
+      WA_LISTHEADER TYPE SLIS_LISTHEADER.
+
+DATA:
+  r_container TYPE REF TO cl_gui_custom_container,
+  r_grid      TYPE REF TO cl_gui_alv_grid.
+
+START-OF-SELECTION.
+  SELECT TRAIN_NO
+         TRAIN_NAME
+         TRAIN_TYPE
+         RUNDAYS
+         DEPT_TIME
+         ARR_TIME
+         SOURCE
+         DESTINATION
+         PRICE
+         FROM ZG6TRAIN_LIST INTO TABLE IT_TRNLIST.
+
+*    CALL SCREEN 1005.
+
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_1005  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE status_1005 OUTPUT.
+*  SET PF-STATUS 'xxxxxxxx'.
+*  SET TITLEBAR 'xxx'.
+   CREATE OBJECT r_container
+    EXPORTING
+      container_name = 'TRAINLISTCONT'.
+
+  CREATE OBJECT r_grid
+    EXPORTING
+      i_parent = r_container.
+
+  CALL METHOD r_grid->set_table_for_first_display
+    EXPORTING
+      i_structure_name = 'ZG6TRAIN_LIST'
+    CHANGING
+      it_outtab        = IT_TRNLIST.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_1005  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_1005 INPUT.
+ CASE sy-ucomm.
+    WHEN 'BACK'.
+      SUBMIT ZG6PGM.
+      CALL SCREEN 811.
+*      LEAVE TO SCREEN 811.
+  ENDCASE.
+ENDMODULE.

@@ -1,0 +1,33 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0301I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0301  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0301 INPUT.
+CASE SY-UCOMM.
+  WHEN 'CHANGE'.
+      IF USER_ID1 IS INITIAL OR CONTACT_NO IS INITIAL.
+        MESSAGE 'PLEASE ENTER USER ID AND CONTACT NO' TYPE 'I'.
+      ENDIF.
+      SELECT SINGLE user_id  contact_no
+      FROM zg6_user_reg INTO CORRESPONDING FIELDS OF wa_user WHERE user_id = user_id1 AND contact_no = contact_no .
+      IF sy-subrc = 0.
+        UPDATE zg6_user_reg SET password = new_password WHERE user_id = user_id1.
+        IF SY-SUBRC = 0.
+          MESSAGE 'PASSWORD CHANGED' TYPE 'I'.
+          LEAVE TO SCREEN 300.
+        ELSE.
+          MESSAGE 'PASSWORD NOT CHANGED' TYPE 'I'.
+        ENDIF.
+      ELSE.
+        MESSAGE 'INVALID USER_ID OR CONTACT_NO' TYPE 'I'.
+      ENDIF.
+     WHEN 'CLEAR1'.
+      CLEAR: user_id1, NEW_password, CONTACT_NO.
+     WHEN 'BACK'.
+       LEAVE TO SCREEN 300.
+ENDCASE.
+ENDMODULE.

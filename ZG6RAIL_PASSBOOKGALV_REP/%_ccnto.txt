@@ -1,0 +1,15 @@
+TYPE-POOL CNTO .
+
+*CLASS CL_GUI_CONTROL DEFINITION DEFERRED PUBLIC.
+TYPES CNTO_CONTROL_LIST TYPE REF TO CL_GUI_CONTROL OCCURS 0.
+
+* Type for lifetime description of a control
+types: begin of cnto_lifetime_info,
+    LIFETIME TYPE I,
+    DYNPRO_PROGRAM TYPE SYREPID,
+    DYNPRO_NR TYPE SYDYNNR,
+    STACKLEVEL TYPE I,
+    IS_CONTAINER,
+    INVISIBLE,
+    TOP_PARENTID TYPE I,
+       end of cnto_lifetime_info.

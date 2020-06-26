@@ -1,0 +1,17 @@
+class CX_SY_REGEX definition
+  public
+  inheriting from CX_DYNAMIC_CHECK
+  create public .
+
+*"* public components of class CX_SY_REGEX
+*"* do not include other source files here!!!
+public section.
+
+  constants CX_SY_REGEX type SOTR_CONC value 'DEB2963F4AA53D72E10000000A114BF5'. "#EC NOTEXT
+  data PATTERN type STRING read-only .
+
+  methods CONSTRUCTOR
+    importing
+      !TEXTID like TEXTID optional
+      !PREVIOUS like PREVIOUS optional
+      !PATTERN type STRING optional .

@@ -1,0 +1,21 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_EXITI01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  EXIT  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE exit INPUT.
+  CASE sy-ucomm.
+    WHEN 'HOME'.
+      CLEAR: ADMIN_id, ADMIN_password.
+      LEAVE TO SCREEN 100.
+    WHEN 'REGISTER'.
+      LEAVE TO SCREEN 200.
+    WHEN 'CLEAR'.
+      CLEAR: ADMIN_id, ADMIN_password.
+    WHEN 'FORGOT'.
+      LEAVE TO SCREEN 301.
+  ENDCASE.
+ENDMODULE.

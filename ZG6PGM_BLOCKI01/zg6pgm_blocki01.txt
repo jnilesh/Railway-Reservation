@@ -1,0 +1,39 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_BLOCKI01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      MODULE  BLOCK  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE BLOCK_DELETE INPUT.
+  CASE SY-UCOMM.
+
+    WHEN 'BLOCK'.
+      IF LS3 = 'X'.
+        UPDATE ZG6_USER_REG SET BLOCK = 1 WHERE USER_ID = WA_USER-USER_ID.
+        IF SY-SUBRC = 0.
+        MESSAGE 'USER BLOCKED' TYPE 'I'.
+        ENDIF.
+        REFRESH CONTROL 'TC3' FROM SCREEN '0812'.
+      ENDIF.
+    WHEN 'DELETE'.
+      IF LS3 = 'X'.
+        DELETE FROM ZG6_USER_REG WHERE USER_ID = WA_USER-USER_ID.
+        IF SY-SUBRC = 0.
+        MESSAGE 'USER DELETED' TYPE 'I'.
+        ENDIF.
+        REFRESH CONTROL 'TC3' FROM SCREEN '0812'.
+      ENDIF.
+   WHEN 'UPDATE'.
+     IF LS3 = 'X'.
+       UPDATE ZG6_USER_REG FROM WA_USER.
+       IF SY-SUBRC = 0.
+         MESSAGE 'DATA UPDATED' TYPE 'I'.
+       ENDIF.
+     ENDIF.
+    ENDCASE.
+     SELECT * FROM ZG6_USER_REG INTO TABLE ITUSER.
+     REFRESH CONTROL 'TC3' FROM SCREEN '812'.
+
+ENDMODULE.

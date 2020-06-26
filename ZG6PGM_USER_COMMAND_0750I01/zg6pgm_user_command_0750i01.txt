@@ -1,0 +1,38 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0750I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0750  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0750 INPUT.
+CASE SY-UCOMM.
+
+  WHEN 'SUBMIT'.
+    IF WA_FEED-RATING IS INITIAL.
+      MESSAGE 'PLEASE ENTER RATING' TYPE 'I'.
+    ELSEIF WA_FEED-COMMENTS IS INITIAL.
+      MESSAGE 'PLEASE ENTER COMMENTS' TYPE 'I'.
+    ELSE.
+       WA_FEED-USER_ID   = WA_USER-USER_ID.
+       WA_FEED-TICKET_NO = TICNO1.
+
+       INSERT  ZG6FEEDBACK FROM WA_FEED.
+
+*       IF SY-SUBRC = 0.
+*           MESSAGE 'DATA INSERTED' TYPE 'I'.
+*
+*       ENDIF.
+
+    MESSAGE 'THANK YOU FOR FILLING FEEDBACK FORM ;)' TYPE 'I'.
+    LEAVE TO SCREEN 350.
+    ENDIF.
+
+     WHEN 'CLEAR'.
+    CLEAR WA_FEED.
+
+  WHEN 'BACK'.
+    LEAVE TO SCREEN 704.
+ENDCASE.
+ENDMODULE.

@@ -1,0 +1,29 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_DELETE_UPDATEI01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  DELETE_UPDATE  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE delete_update INPUT.
+CASE SY-UCOMM.
+WHEN 'DELETE'.
+     IF LS1 = 'X'.
+        DELETE FROM ZG6TRAIN_LIST WHERE TRAIN_NO = WA-TRAIN_NO.
+        IF SY-SUBRC = 0.
+        MESSAGE 'TRAIN DELETED' TYPE 'I'.
+        ENDIF.
+        REFRESH CONTROL 'TC1' FROM SCREEN '0811'.
+      ENDIF.
+   WHEN 'UPDATE'.
+     IF LS1 = 'X'.
+       UPDATE ZG6TRAIN_LIST FROM WA.
+       IF SY-SUBRC = 0.
+        MESSAGE 'TRAIN UPDATED' TYPE 'I'.
+        ENDIF.
+     ENDIF.
+     SELECT * FROM ZG6TRAIN_LIST INTO TABLE ITAB.
+     REFRESH CONTROL 'TC1' FROM SCREEN '0811'.
+ENDCASE.
+ENDMODULE.

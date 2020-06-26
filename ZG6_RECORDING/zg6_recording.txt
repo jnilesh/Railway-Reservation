@@ -1,0 +1,17 @@
+*&---------------------------------------------------------------------*
+*& Module Pool       ZG6_RECORDING
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+
+INCLUDE ZG6_RECORDING_TOP .
+    " global Data
+
+* INCLUDE ZG6_RECORDING_O01                       .  " PBO-Modules
+* INCLUDE ZG6_RECORDING_I01                       .  " PAI-Modules
+* INCLUDE ZG6_RECORDING_F01                       .  " FORM-Routines
+
+INCLUDE zg6_recording_status_0100o01.

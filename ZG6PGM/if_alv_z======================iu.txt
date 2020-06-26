@@ -1,0 +1,76 @@
+*"* components of interface IF_ALV_Z
+interface IF_ALV_Z
+  public .
+
+
+  types Y_FILENAME type STRING .
+  types Y_FILESIZE type INT4 .
+  types:
+    begin of ys_texts,
+          text_id(3) type c,
+          text       type string,
+         end   of ys_texts .
+  types:
+    yt_texts type table of ys_texts .
+  types Y_TYPE_NAME type STRING .
+  types Y_USAGE_PATH type STRING .
+  types Y_CONTAINER_NAME type STRING .
+  types YS_VARIANT type LTDXKEY .
+  types Y_STATE type STRING .
+  types Y_TEMPLATE_SOURCE type STRING .
+  types Y_NAME type CHAR30 .
+  types Y_VALUE type ref to DATA .
+  types:
+    begin of  ys_param,
+      name  type y_name,
+      value type y_value,
+    end of ys_param .
+  types:
+    yt_param type table of ys_param with default key .
+  types:
+    begin of  ys_identity,
+      type_name      type y_type_name,
+      container_name type y_container_name,
+      usage_path     type y_usage_path,
+      variant        type ys_variant,
+    end of ys_identity .
+  types:
+    begin of  ys_template_provider,
+      uri            type bds_uri,
+      blob           type salv_bs_blob,
+      blob_format_version type salv_bs_blob_format_version,
+      blob_name           type string,
+      source         type y_template_source,
+      frontend       type lvc_front,
+      template_type  type string,
+    end of ys_template_provider .
+  types Y_FRONTEND type LVC_FRONT .
+
+  constants:
+    begin of c_template_source,
+      excel   type y_template_source value 'EXCEL',
+      crystal type y_template_source value 'CRYSTAL',
+    end of c_template_source .
+  constants:
+    begin of c_template_type,
+      crystal_custom_report type string value 'CRYSTAL_CUSTOM',
+      crystal_generic_report type string value 'CRYSTAL_GENERIC',
+    end of c_template_type .
+  constants:
+    begin of c_state,
+      current type y_state value 'CURRENT',
+      last    type y_state value 'LAST',
+      next    type y_state value 'NEXT',
+    end of c_state .
+  constants:
+    begin of c_frontend,
+               table              type y_frontend value cl_alv_bds=>mc_grid_frontend,    " space
+               excel              type y_frontend value cl_alv_bds=>mc_excel_frontend,   " E
+               lotus              type y_frontend value cl_alv_bds=>mc_lotus_frontend,   " L
+               crystal            type y_frontend value cl_alv_bds=>mc_crystal_frontend, " C
+               word               type y_frontend value 'W',                             " W
+               graphics           type y_frontend value 'G',                             " G
+               table_and_graphics type y_frontend value '2',                             " 2
+             end of c_frontend .
+  constants C_API_VERSION type STRING value '740.11' ##NO_TEXT.    " Release.SP (increased on demand)
+endinterface.

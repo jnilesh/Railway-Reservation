@@ -1,0 +1,30 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_DEL_UPDATEI01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  DEL_UPDATE  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE del_update INPUT.
+CASE SY-UCOMM.
+WHEN 'DELETE'.
+      IF LS = 'X'.
+        DELETE FROM ZG6FOOD_DETAILS WHERE ITEM_CODE = WA_FDETAIL-ITEM_CODE.
+        IF SY-SUBRC = 0.
+          MESSAGE 'USER DELETED' TYPE 'I'.
+        ENDIF.
+        REFRESH CONTROL 'TC2' FROM SCREEN '0813'.
+      ENDIF.
+    WHEN 'UPDATE'.
+      IF LS = 'X'.
+        UPDATE ZG6FOOD_DETAILS FROM WA_FDETAIL.
+        IF SY-SUBRC = 0.
+          MESSAGE 'DATA UPDATED' TYPE 'I'.
+        ENDIF.
+      ENDIF.
+
+      SELECT * FROM ZG6FOOD_DETAILS INTO TABLE IT_FDETAIL.
+      REFRESH CONTROL 'TC2' FROM SCREEN '813'.
+ENDCASE.
+ENDMODULE.

@@ -1,0 +1,86 @@
+*&---------------------------------------------------------------------*
+*& Report ZG6RAIL_USERREGALV_REP
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZG6RAIL_USERREGALV_REP.
+TYPE-POOLS: SLIS.
+TABLES: ZG6_USER_REG.
+
+TYPES: BEGIN OF TY_USER,
+        USER_ID TYPE ZG6DEUSERID,
+        PASSWORD TYPE ZG6DEPASSWORD,
+        NAME TYPE ZG6DENAME,
+        MAIL_ID TYPE ZG6DEMAILID,
+        CONTACT_NO TYPE ZG6DECONTACTNO,
+        STATE TYPE ZG6_DESTATE,
+        AGE TYPE ZG6_AGE,
+        ADDRESS TYPE ZG6_ADDRESS,
+        BLOCK TYPE ZG6_BLOCK,
+       END OF TY_USER.
+
+DATA: IT_USERREG TYPE TABLE OF TY_USER,
+      WA_USER TYPE TY_USER.
+DATA: IT_LISTHEADER TYPE SLIS_T_LISTHEADER,
+      WA_LISTHEADER TYPE SLIS_LISTHEADER.
+
+DATA:
+  r_container TYPE REF TO cl_gui_custom_container,
+  r_grid      TYPE REF TO cl_gui_alv_grid.
+
+START-OF-SELECTION.
+  SELECT USER_ID
+         PASSWORD
+         NAME
+         MAIL_ID
+         CONTACT_NO
+         STATE
+         AGE
+         ADDRESS
+         BLOCK
+         FROM zg6_user_reg INTO TABLE IT_USERREG.
+
+      CALL SCREEN 1006.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+   EXPORTING
+     I_STRUCTURE_NAME                  = 'zg6_user_reg'
+     I_CALLBACK_PROGRAM                = SY-REPID
+     I_CALLBACK_TOP_OF_PAGE            = 'TOPPAGE'
+
+    TABLES
+      t_outtab                          = IT_USERREG.
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_1006  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE status_1006 OUTPUT.
+*  SET PF-STATUS 'xxxxxxxx'.
+*  SET TITLEBAR 'xxx'.
+
+  CREATE OBJECT r_container
+    EXPORTING
+      container_name = 'USERREGCONT'.
+
+  CREATE OBJECT r_grid
+    EXPORTING
+      i_parent = r_container.
+
+  CALL METHOD r_grid->set_table_for_first_display
+    EXPORTING
+      i_structure_name = 'ZG6_USER_REG'
+    CHANGING
+      it_outtab        = IT_USERREG.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_1006  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_1006 INPUT.
+CASE sy-ucomm.
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 811.
+  ENDCASE.
+ENDMODULE.

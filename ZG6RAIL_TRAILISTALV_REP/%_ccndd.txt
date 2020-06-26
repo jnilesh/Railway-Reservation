@@ -1,0 +1,31 @@
+TYPE-POOL CNDD .
+* Flavor is just a string. It could be any string that identifies
+* a data object type. The flvor may be seen as something similar
+* to a class name resp. mime type
+
+TYPES :  CNDD_FLAVOR(40) TYPE C.
+TYPES :  CNDD_FLAVORS TYPE CNDD_FLAVOR OCCURS 0.
+
+* simple Propertybag type. A propertybag consist of a table that
+* associates name to values.
+
+TYPES :  CNDD_PROPNAME(40) TYPE C.        " Name of Property
+TYPES :  CNDD_PROPREMOTEVALUE TYPE SWC_VALUE.  " Value of Remote
+                                                " Automation PROPERTY
+TYPES :  CNDD_PROPVALUE TYPE STRING.      " Value of property
+TYPES :  BEGIN OF CNDD_PROP,
+            PROPNAME  TYPE CNDD_PROPNAME,    " Property Name
+            PROPVALUE TYPE CNDD_PROPVALUE,  " Property Value
+         END OF CNDD_PROP.
+* This structure is for transferring property bag through automation
+* be carefull, the value is only 80 chars !
+TYPES :  BEGIN OF CNDD_REMOTEPROP,
+            PROPNAME  TYPE CNDD_PROPNAME,    " Property Name
+            PROPVALUE TYPE CNDD_PROPREMOTEVALUE,  " Property Value
+         END OF CNDD_REMOTEPROP.
+
+TYPES : CNDD_REMOTEPROPS TYPE CNDD_REMOTEPROP OCCURS 0.
+                                                " Table of Properties
+TYPES : CNDD_HASHEDPROPS TYPE HASHED TABLE OF CNDD_PROP
+                                 WITH UNIQUE KEY PROPNAME.
+TYPES : CNDD_PROPS TYPE CNDD_HASHEDPROPS.

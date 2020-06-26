@@ -1,0 +1,308 @@
+class CL_SSF_XSF_UTILITIES definition
+  public
+  final
+  create public .
+
+public section.
+  type-pools CSSF .
+  type-pools CXFA .
+  type-pools CXSF .
+  type-pools IXML .
+  type-pools SBDST .
+  class CL_BSP_MIMES definition load .
+  class CL_IXML definition load .
+
+  class-data C_VERSION_BMP type INT4 read-only value 1. "#EC NOTEXT .
+  class-data C_VERSION_CSS type INT4 read-only value 5. "#EC NOTEXT .
+
+  class-methods GET_ESCAPED_STRING
+    importing
+      !STRING type STRING
+    returning
+      value(RVAL) type STRING .
+  class-methods CONVERT_METRIC
+    importing
+      value(IVALUE) type ANY
+      value(IUNIT) type ANY
+      value(OUNIT) type ANY
+      value(CPI) type ANY optional
+      value(LPI) type ANY optional
+    exporting
+      value(OVALUE) type ANY
+    exceptions
+      ERROR .
+  class-methods STRING_WITH_CRLF_TO_TABLE
+    importing
+      !P_STRING type STRING
+    returning
+      value(P_TABLE) type TSFSTBODY .
+  class-methods MERGE_MARKED_TABLES
+    importing
+      !MARK type SSFXSFTAG
+      !INSERT_TABLE type TSFSTBODY
+    changing
+      !TARGET_TABLE type TSFSTBODY .
+  class-methods CREATE_INTERNAL_HTTP_REQUEST
+    importing
+      !METHOD type STRING
+      !PATH type STRING
+    returning
+      value(CLIENT) type ref to IF_HTTP_CLIENT
+    exceptions
+      REQUEST_FAILED .
+  class-methods SEND_HTTP_REQUEST
+    importing
+      !CLIENT type ref to IF_HTTP_CLIENT
+    returning
+      value(DATA_TABLE) type TSFSTBODY
+    exceptions
+      SEND_FAILED
+      RECEIVE_FAILED .
+  class-methods GET_BDS_GRAPHIC_AS_BMP
+    importing
+      !P_OBJECT type TDOBJECTGR
+      !P_NAME type TDOBNAME
+      !P_ID type TDIDGR
+      !P_BTYPE type TDBTYPE
+    returning
+      value(P_BMP) type XSTRING
+    exceptions
+      NOT_FOUND
+      INTERNAL_ERROR .
+  class-methods MIME_URL_FOR_BDS_GRAPHIC
+    importing
+      !P_OBJECT type CLIKE
+      !P_NAME type CLIKE
+      !P_ID type CLIKE
+      !P_BTYPE type CLIKE
+    returning
+      value(RVAL) type STRING .
+  class-methods GET_ICON_SOURCE
+    importing
+      value(ICON_CODE) type STRING
+    exporting
+      !SOURCE type XSTRING
+      !HTTPTYPE type STRING
+    raising
+      CX_SSF_XSF .
+  class-methods GET_SMART_FORM_AS_XML
+    importing
+      !P_FORMNAME type TDSSNAME
+    returning
+      value(P_XML) type XSTRING
+    exceptions
+      NOT_FOUND
+      INTERNAL_ERROR .
+  class-methods GET_SMART_STYLE_AS_CSS
+    importing
+      !P_STYLENAME type TDSSNAME
+    returning
+      value(P_CSS) type XSTRING
+    exceptions
+      NOT_FOUND
+      INTERNAL_ERROR .
+  class-methods GET_SMART_STYLE_AS_XML
+    importing
+      !P_STYLENAME type TDSSNAME
+    exporting
+      value(P_CONTENT) type XSTRING
+      value(P_LENGTH) type I
+      value(P_HTTP_TYPE) type STRING
+    raising
+      CX_SSF_XSF .
+  class-methods GET_SFTEXT_AS_HTML
+    importing
+      value(P_NAME) type TDTXTNAME
+      value(P_LANGUAGE) type LAISO optional
+      !P_VALUES type TIHTTPNVP optional
+      !P_INPUT type TSFINPUT optional
+    exporting
+      value(P_CONTENT) type XSTRING
+      value(P_LENGTH) type I
+      value(P_HTTP_TYPE) type STRING
+    raising
+      CX_SSF_XSF .
+  class-methods GET_SFTEXT_AS_XSF
+    importing
+      value(P_NAME) type TDTXTNAME
+      value(P_LANGUAGE) type LAISO optional
+      !P_VALUES type TIHTTPNVP optional
+      !P_INPUT type TSFINPUT optional
+    exporting
+      value(P_CONTENT) type XSTRING
+      value(P_LENGTH) type I
+      value(P_HTTP_TYPE) type STRING
+    raising
+      CX_SSF_XSF .
+  class-methods GET_SFTEXT_AS_PLAIN_TEXT
+    importing
+      value(P_NAME) type TDTXTNAME
+      value(P_LANGUAGE) type LAISO optional
+      !P_VALUES type TIHTTPNVP optional
+      !P_INPUT type TSFINPUT optional
+    exporting
+      value(P_CONTENT) type XSTRING
+      value(P_LENGTH) type I
+      value(P_HTTP_TYPE) type STRING
+    raising
+      CX_SSF_XSF .
+  class-methods GET_SFTEXT_AS_DOM
+    importing
+      value(P_NAME) type TDSFNAME
+      value(P_LANGUAGE) type LAISO optional
+      !P_IXML type ref to IF_IXML optional
+      !P_VALUES type TIHTTPNVP optional
+      !P_INPUT type TSFINPUT optional
+    returning
+      value(DOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      CX_SSF_XSF .
+  class-methods GET_STDTEXT_AS_HTML
+    importing
+      value(P_OBJECT) type TDOBJECT
+      value(P_ID) type TDID
+      value(P_LANGUAGE) type LAISO
+      value(P_NAME) type TDOBNAME
+      !P_VALUES type TIHTTPNVP optional
+      !P_INPUT type TSFINPUT optional
+    exporting
+      value(P_CONTENT) type XSTRING
+      value(P_LENGTH) type I
+      value(P_HTTP_TYPE) type STRING
+    raising
+      CX_SSF_XSF .
+  class-methods GET_STDTEXT_AS_XSF
+    importing
+      value(P_OBJECT) type TDOBJECT
+      value(P_ID) type TDID
+      value(P_LANGUAGE) type LAISO
+      value(P_NAME) type TDOBNAME
+      !P_VALUES type TIHTTPNVP optional
+      !P_INPUT type TSFINPUT optional
+    exporting
+      value(P_CONTENT) type XSTRING
+      value(P_LENGTH) type I
+      value(P_HTTP_TYPE) type STRING
+    raising
+      CX_SSF_XSF .
+  class-methods GET_STDTEXT_AS_PLAIN_TEXT
+    importing
+      !P_OBJECT type TDOBJECT
+      !P_ID type TDID
+      !P_LANGUAGE type LAISO
+      !P_NAME type TDOBNAME
+      !P_VALUES type TIHTTPNVP optional
+      !P_INPUT type TSFINPUT optional
+    exporting
+      value(P_CONTENT) type XSTRING
+      value(P_LENGTH) type I
+      value(P_HTTP_TYPE) type STRING
+    raising
+      CX_SSF_XSF .
+  class-methods GET_STDTEXT_AS_DOM
+    importing
+      value(P_OBJECT) type TDOBJECT
+      value(P_ID) type TDID
+      value(P_LANGUAGE) type LAISO
+      value(P_NAME) type TDOBNAME
+      !P_IXML type ref to IF_IXML optional
+      !P_VALUES type TIHTTPNVP optional
+      !P_INPUT type TSFINPUT optional
+    returning
+      value(DOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      CX_SSF_XSF .
+  class-methods GET_SAPCHAR
+    importing
+      value(SAPCHAR) type STRING
+    exporting
+      value(TYPE) type TDSFFLAG
+      value(VALUE) type STRING
+    raising
+      CX_SSF_XSF .
+  methods CREATE_ROOT_NODE
+    importing
+      !DOCUMENT type ref to IF_IXML_DOCUMENT
+    returning
+      value(NODE) type ref to IF_IXML_NODE .
+  methods SET_NAMESPACE
+    importing
+      !PREFIX type SSFXSFTAG
+      !URI type SSFXSFTAG .
+  methods GET_NAMESPACE
+    exporting
+      !PREFIX type STRING
+      !URI type STRING .
+  methods SET_NS_ATTRIBUTE
+    importing
+      value(NODE) type ref to IF_IXML_NODE .
+  methods FINALIZE
+    importing
+      !IXML type ref to IF_IXML
+      !DOCUMENT type ref to IF_IXML_DOCUMENT
+      !EXTENDED_DOCUMENT type ref to IF_IXML_DOCUMENT optional
+      value(TRANSFORMATION) type SFXSFTRF
+      value(TRFNAME) type SSFTRFNAME optional
+      value(TRFINTERFACE) type ref to IF_SSF_XSF_TRANSFORMATION optional
+      value(TRFSOURCE) type SSFTRFPRG optional
+      value(XSF_ACTION) type SSFACTION optional
+      value(FMT_LOCATION) type SFFMTLOC
+      value(FMT_DIRECTORY) type SSFDIRURL optional
+      value(DISPLAY_MODE) type SSFDISPMOD optional
+      value(GR_DIRECTORY) type SSFDIRURL optional
+      value(BASE_URL) type SSFDIRURL optional
+      value(CONTENT_ID) type STRING optional
+      value(STSHEET) type SSFSTYLS optional
+    changing
+      !XSFDATA type TSFIXML optional
+      !XSFLENGTH type I optional
+      !XSFTYPE type STRING optional
+      !TRFRESULT type TRFRESULT optional
+      !AP_TEXT_NODES type TSFXMLNODE optional .
+  methods XSLT_TRANSFORMATION
+    importing
+      !IXML type ref to IF_IXML
+      !TRFMETHOD type SSFTRFNAME
+      !TRFINTERFACE type ref to IF_SSF_XSF_TRANSFORMATION
+      !IN_DOCUMENT type ref to IF_IXML_DOCUMENT
+      !DISPLAY_MODE type SSFDISPMOD
+      !XSF_ACTION type SSFACTION
+      !BASE_URL type STRING
+      !FMT_LOCATION type SFFMTLOC
+      !FMT_DIR type STRING
+      !FMT_NAME type STRING
+      !GR_DIR type STRING
+      value(CONTENT_ID) type STRING optional
+    exporting
+      !OUT_DOCUMENT type ref to IF_IXML_DOCUMENT
+      !OUT_XSTRING type XSTRING
+    exceptions
+      XSLT_ERROR .
+  class-methods XSF_PREPARE_FOR_TRANSFORMATION
+    importing
+      !DOCUMENT type ref to IF_IXML_DOCUMENT
+    returning
+      value(RVAL) type ref to IF_IXML_DOCUMENT .
+  class-methods ITF_TO_HTML
+    importing
+      value(LINES) type TSFTEXT
+      value(STYLE_HEADER) type SSFSTYLHD optional
+      value(STYLE_PARAGRAPHS) type TSFCOMPPAR optional
+      value(STYLE_CHARFORMATS) type TSFCOMPSTR optional
+      !VALUES type TIHTTPNVP optional
+      !INPUT type TSFINPUT optional
+    exporting
+      !CONTENT type XSTRING
+      !LENGTH type I
+      !HTTP_TYPE type STRING
+      !FIELDS type TSFDFIELD
+    raising
+      CX_SSF_XSF .
+  class-methods ITF_PARSE_SYMBOL
+    importing
+      !TOKENS type TSFTOKEN
+      !START_INDEX type I
+    exporting
+      !END_INDEX type I
+      !QTOKENS type TSFTOKEN
+      !NAME type CLIKE .

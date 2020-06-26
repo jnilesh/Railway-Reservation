@@ -1,0 +1,44 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0200I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0200  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0200 INPUT.
+CASE SY-UCOMM.
+
+  matcher1 = cl_abap_matcher=>create(
+             pattern = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})`
+             ignore_case = 'X'
+             text = WA_USER-MAIL_ID ).
+    WHEN 'REGISTER'.
+      SELECT USER_ID  FROM zg6_user_reg INTO USER_ID
+        WHERE USER_ID = WA_USER-USER_ID OR CONTACT_NO = WA_USER-CONTACT_NO OR MAIL_ID = WA_USER-MAIL_ID.
+        ENDSELECT.
+      IF SY-SUBRC = 0.
+           MESSAGE 'USER ALREADY EXISTS, KINDLY LOGIN OR REGISTER WITH NEW CREDENTIALS ' TYPE 'I'.
+           CLEAR USER_ID.
+      ELSEIF STRLEN( WA_USER-CONTACT_NO ) <> 10.
+        MESSAGE 'CONTACT NUMBER MUST BE OF 10 DIGITS' TYPE 'I'.
+        CLEAR WA_USER-CONTACT_NO.
+      ELSEIF  matcher1->match( ) is INITIAL.
+      MESSAGE 'Wrong EMAIL Format' TYPE 'I'.
+
+      ELSE.
+      INSERT INTO zg6_user_reg VALUES wa_user.
+      IF sy-subrc = 0.
+        MESSAGE 'REGISTERED SUCCESSFULLY' TYPE 'I'.
+        user_id = user_id.
+        password = password.
+        leave to SCREEN 300.
+      ELSE.
+        MESSAGE 'UNABLE TO REGISTER TRY AGAIN' TYPE 'E'.
+      ENDIF.
+      ENDIF.
+    WHEN 'CLEAR'.
+      CLEAR wa_user.
+
+  ENDCASE.
+ENDMODULE.

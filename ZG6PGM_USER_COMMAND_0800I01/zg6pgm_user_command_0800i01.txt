@@ -1,0 +1,23 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0800I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0800  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0800 INPUT.
+    CASE OK_CODE.
+    WHEN 'LOGIN'.
+      SELECT SINGLE USER_ID PASSWORD
+        FROM ZG6_ADMIN_REG INTO CORRESPONDING FIELDS OF wa_admin WHERE USER_ID = ADMIN_ID.
+      IF ADMIN_ID = WA_ADMIN-USER_ID AND ADMIN_PASSWORD = WA_ADMIN-PASSWORD.
+        CLEAR: ADMIN_ID, ADMIN_PASSWORD.
+        LEAVE TO SCREEN 810.
+      ELSE .
+        MESSAGE 'INCORRECT USERNAME/PASSWORD' TYPE 'I'.
+      ENDIF.
+    WHEN 'RESET'.
+      CLEAR: ADMIN_ID, ADMIN_PASSWORD.
+  ENDCASE.
+ENDMODULE.

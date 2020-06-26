@@ -1,0 +1,33 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_STATUS_0704O01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_0704  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE status_0704 OUTPUT.
+ SET PF-STATUS SPACE.
+*  SET TITLEBAR 'xxx'.
+
+* SELECT TICKET_NO FROM ZG6TRAIN_BOOKING INTO TABLE IT_TKT WHERE USERID = USER_ID.
+*
+*  LOOP AT IT_TKT INTO WA_TKT.
+*    WA_LISTBOX-KEY = WA_TKT-TICKET_NO.
+*    WA_LISTBOX-TEXT = WA_TKT-TICKET_NO.
+*    APPEND WA_LISTBOX TO IT_LISTBOX.
+*
+*  ENDLOOP.
+*
+*  LD_FIELD = 'TICNO1'.
+*
+*  CALL FUNCTION 'VRM_SET_VALUES'
+*    EXPORTING
+*      ID     = LD_FIELD
+*      VALUES = IT_LISTBOX.
+*
+*  CLEAR:LD_FIELD, WA_LISTBOX ,IT_LISTBOX[].
+
+
+ PERFORM IMAGE USING 'DEMO12' 'RAILPIC'.
+  ENDMODULE.

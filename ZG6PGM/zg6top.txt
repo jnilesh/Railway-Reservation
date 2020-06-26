@@ -1,0 +1,847 @@
+*&---------------------------------------------------------------------*
+*& INCLUDE ZG6TOP                                            MODULE POOL      ZG6PGM
+*&
+*&---------------------------------------------------------------------*
+PROGRAM ZG6PGM.
+
+TABLES : ZG6SBIBANK,
+         ZG6CITIBANK,
+         ZG6KOTAKBANK,
+         ZG6_ADMIN_REG,
+         ZG6_USER_REG,
+         ZG6TRAIN_LIST.
+
+DATA: LS  TYPE C,
+      LS1 TYPE C,
+      LS3 TYPE C,
+      LS5 TYPE C.
+
+CONTROLS: TC1 TYPE TABLEVIEW USING SCREEN 811,
+          TC3 TYPE TABLEVIEW USING SCREEN 812,
+          TC2 TYPE TABLEVIEW USING SCREEN 813,
+          TC4 TYPE TABLEVIEW USING SCREEN 814.
+
+CONTROLS: TB     TYPE TABSTRIP,
+          TBSTR2 TYPE TABSTRIP.
+
+TYPES: BEGIN OF ITSBI,
+         ACC_NO TYPE ZG6SBIBANK-ACC_NO,
+         NAMEOC TYPE ZG6SBIBANK-NAMEOC,
+         ATMPIN TYPE ZG6SBIBANK-ATMPIN,
+         BAL    TYPE ZG6SBIBANK-BAL,
+       END OF ITSBI.
+
+DATA: IT_FEEDBACK TYPE TABLE OF ZG6FEEDBACK.
+DATA matcher1 TYPE REF TO cl_abap_matcher.
+DATA : ITSBI TYPE TABLE OF ITSBI,
+       WASBI LIKE LINE OF ITSBI.
+
+TYPES: BEGIN OF ITCITI,
+         ACC_NO TYPE ZG6CITIBANK-ACC_NO,
+         NAMEOC TYPE ZG6CITIBANK-NAMEOC,
+         ATMPIN TYPE ZG6CITIBANK-ATMPIN,
+         BAL    TYPE ZG6CITIBANK-BAL,
+       END OF ITCITI.
+
+DATA : ITCITI TYPE TABLE OF ITCITI,
+       WACITI LIKE LINE OF ITCITI.
+
+TYPES: BEGIN OF ITKOTAK,
+         ACC_NO TYPE ZG6KOTAKBANK-ACC_NO,
+         NAMEOC TYPE ZG6KOTAKBANK-NAMEOC,
+         ATMPIN TYPE ZG6KOTAKBANK-ATMPIN,
+         BAL    TYPE ZG6KOTAKBANK-BAL,
+       END OF ITKOTAK.
+
+DATA : ITKOTAK TYPE TABLE OF ITKOTAK,
+       WAKOTAK LIKE LINE OF ITKOTAK.
+
+DATA : SBIBANK , CITIBANK , KOTAKBANK.
+DATA PIN TYPE ZG6SBIBANK-ATMPIN.
+DATA FARE TYPE ZG6SBIBANK-BAL.
+DATA PIN1 TYPE ZG6CITIBANK-ATMPIN.
+DATA FARE1 TYPE ZG6CITIBANK-BAL.
+DATA PIN2 TYPE ZG6KOTAKBANK-ATMPIN.
+DATA FARE2 TYPE ZG6KOTAKBANK-BAL.
+
+DATA : ITADMIN    TYPE TABLE OF ZG6_ADMIN_REG,
+       ITUSER     TYPE TABLE OF ZG6_USER_REG,
+
+       USER_ID    TYPE  ZG6_USER_REG-USER_ID,
+       USER_ID1    TYPE  ZG6_USER_REG-USER_ID,
+       PASSWORD   TYPE  ZG6_USER_REG-PASSWORD,
+       NEW_PASSWORD   TYPE  ZG6_USER_REG-PASSWORD,
+       CONTACT_NO TYPE  ZG6_USER_REG-CONTACT_NO,
+       ADMIN_ID TYPE ZG6_ADMIN_REG-USER_ID,
+       ADMIN_PASSWORD TYPE ZG6_ADMIN_REG-PASSWORD,
+
+
+       WA_ADMIN   TYPE ZG6_ADMIN_REG,
+       WA_USER    TYPE ZG6_USER_REG,
+       WA_TRAIN   TYPE ZG6TRAIN_LIST,
+
+       PRICE      TYPE I,
+       AMOUNT     TYPE I,
+       TPRICE     TYPE I,
+       FPRICE     TYPE I,
+       TKTNO      TYPE STRING,
+
+       TAB1       TYPE TABLE OF STRUCT,
+       OK_CODE    TYPE SY-UCOMM,
+       DATUM      TYPE SY-DATUM,
+       UZEIT      TYPE SY-UZEIT,
+
+       WA_FOOD    TYPE ZG6FOOD_BOOKING,
+       IT_FOOD    TYPE TABLE OF ZG6FOOD_BOOKING,
+
+       WA_FDETAIL TYPE ZG6FOOD_DETAILS,
+       IT_FDETAIL TYPE TABLE OF ZG6FOOD_DETAILS,
+
+       BOOK       TYPE ZG6TRAIN_BOOKING,
+       IT_BOOK    TYPE TABLE OF ZG6TRAIN_BOOKING.
+
+CONTROLS TRAIN_LIST_TABLE TYPE TABLEVIEW USING SCREEN 1001.
+
+DATA: ITAB TYPE STANDARD TABLE OF ZG6TRAIN_LIST,
+      WA   TYPE ZG6TRAIN_LIST.
+
+DATA: SOURCE     TYPE ZG6TRAIN_LIST-SOURCE,
+      DESINATION TYPE ZG6TRAIN_LIST-DESTINATION.
+
+                      DATA TICNO1 TYPE ZG6TRAIN_BOOKING-TICKET_NO.
+                      DATA : CITYACC,CITI TYPE ZG6CITIBANK-ACC_NO.
+                       DATA:  CITYTPRICE     TYPE I.
+
+
+TYPES : BEGIN OF TYFITEM,
+          ITEM_NAME TYPE ZG6DEITEM_NAME,
+        END OF TYFITEM.
+
+TYPES : BEGIN OF TYTKT,
+        TICKET_NO TYPE ZG6DETICKET_NO,
+        END OF TYTKT.
+
+
+DATA: IT_FITEM TYPE TABLE OF TYFITEM,
+      WA_FITEM TYPE TYFITEM.
+
+DATA: IT_TKT TYPE TABLE OF TYTKT,
+      WA_TKT TYPE TYTKT.
+
+DATA: LD_FIELD   TYPE VRM_ID,
+      IT_LISTBOX TYPE VRM_VALUES,
+      WA_LISTBOX LIKE LINE OF IT_LISTBOX.
+
+TYPES : BEGIN OF TYSOURCE,
+          SOURCE TYPE ZG6SRCSTN,
+        END OF TYSOURCE.
+
+TYPES : BEGIN OF TYDESTN,
+          DESTINATION TYPE ZG6DSTNSTN,
+        END OF TYDESTN.
+
+DATA: ITSOURCE TYPE STANDARD TABLE OF TYSOURCE,
+      WASOURCE TYPE TYSOURCE.
+
+DATA: ITDESTN TYPE STANDARD TABLE OF TYDESTN,
+      WADESTN TYPE TYDESTN.
+
+DATA WA_FEED TYPE ZG6FEEDBACK.
+DATA: SLEEPER,AC,GENERAL.
+DATA : COACH TYPE I, TIKPRICE TYPE I.
+
+
+
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0100  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0100 INPUT.
+  CASE OK_CODE.
+    WHEN 'USER'.
+      LEAVE TO SCREEN 300.
+    WHEN 'ADMIN'.
+      LEAVE TO SCREEN 800.
+
+    WHEN 'EXIT'.
+      LEAVE PROGRAM.
+
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0500  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0500 INPUT.
+  CASE SY-UCOMM.
+      AMOUNT = PRICE.
+
+
+    WHEN 'SUBMIT'.
+      IF BOOK-AADHAR_PAN < 100000000000.
+        MESSAGE 'ENTER A VALID AADHAR NUMBER' TYPE 'E' .
+
+      ELSEIF  BOOK-DOJ <= SY-DATUM.
+        MESSAGE 'ENTER A VALID DATE' TYPE 'E'.
+
+
+      ELSE.
+
+        BOOK-USERID = USER_ID.
+        BOOK-TRAIN_NO = WA_TRAIN-TRAIN_NO.
+        BOOK-TRAIN_NAME = WA_TRAIN-TRAIN_NAME.
+        BOOK-SOURCE = WA_TRAIN-SOURCE.
+        BOOK-DESTINATION = WA_TRAIN-DESTINATION.
+        BOOK-MANDT = SY-MANDT.
+
+
+        IF SLEEPER = 'X'.
+          COACH = 2.
+          BOOK-COACH = 'SLEEPER'.
+        ELSEIF GENERAL = 'X'.
+          COACH = 1.
+          BOOK-COACH = 'GENERAL'.
+        ELSEIF AC = 'X'.
+          COACH = 3.
+          BOOK-COACH = 'AC'.
+
+        ENDIF.
+
+
+
+        TIKPRICE = WA_TRAIN-PRICE * COACH .
+        PRICE = TIKPRICE * BOOK-NO_OF_PASSENGERS.
+        BOOK-TOT_FARE = PRICE.
+        LEAVE TO SCREEN 600.
+
+      ENDIF.
+
+    WHEN 'CALCULATE'.
+
+
+        IF SLEEPER = 'X'.
+          COACH = 2.
+          BOOK-COACH = 'SLEEPER'.
+        ELSEIF GENERAL = 'X'.
+          COACH = 1.
+          BOOK-COACH = 'GENERAL'.
+        ELSEIF AC = 'X'.
+          COACH = 3.
+          BOOK-COACH = 'AC'.
+
+        ENDIF.
+
+        TIKPRICE = WA_TRAIN-PRICE * COACH .
+        PRICE = TIKPRICE * BOOK-NO_OF_PASSENGERS.
+        BOOK-TOT_FARE = PRICE.
+
+
+
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0500  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0500 OUTPUT.
+*  SET PF-STATUS 'XXXXXXXX'.
+*  SET TITLEBAR 'XXX'.
+
+
+  CONCATENATE SY-DATUM+6(2)
+                   SY-DATUM+4(2)
+                   SY-DATUM+0(4)
+                   SY-UZEIT+0(2)
+                   SY-UZEIT+2(2)
+                   SY-UZEIT+4(2)
+                   USER_ID(4)
+                   INTO BOOK-TICKET_NO .
+
+
+  PERFORM IMAGE USING 'BOOK1' 'LTRAIN'.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0600  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0600 INPUT.
+
+  CASE SY-UCOMM.
+
+    WHEN 'SHOW'.
+      SELECT SINGLE ITEM_CODE ITEM_NAME PRICE FROM ZG6FOOD_DETAILS INTO CORRESPONDING FIELDS OF WA_FDETAIL WHERE ITEM_NAME = WA_FOOD-ITEM_NAME.
+
+
+    WHEN 'NEXT'.
+      IF WA_FOOD-ITEM_NAME IS INITIAL.
+        MESSAGE 'SELECT A MEAL FIRST' TYPE 'E'.
+      ELSEIF
+          WA_FOOD-QUANTITY <= 0 AND WA_FOOD-QUANTITY > 10.
+        MESSAGE 'MEAL QUANTITY CANNOT BE LESS THAN O OR GREATER THAN 10.'TYPE 'E'.
+      ELSE.
+
+
+        WA_FOOD-TICKET_NO =  BOOK-TICKET_NO .
+        WA_FOOD-USERID = USER_ID.
+        WA_FOOD-MANDT = SY-MANDT.
+
+
+        SELECT SINGLE ITEM_CODE ITEM_NAME PRICE FROM ZG6FOOD_DETAILS INTO CORRESPONDING FIELDS OF WA_FDETAIL WHERE ITEM_NAME = WA_FOOD-ITEM_NAME.
+        WA_FOOD-PRICE = WA_FDETAIL-PRICE * WA_FOOD-QUANTITY.
+
+        TPRICE = WA_FOOD-PRICE + PRICE.
+        LEAVE TO SCREEN 700.
+
+      ENDIF.
+
+
+
+    WHEN 'ADD'.
+      SELECT SINGLE ITEM_CODE ITEM_NAME PRICE FROM ZG6FOOD_DETAILS INTO CORRESPONDING FIELDS OF WA_FDETAIL WHERE ITEM_NAME = WA_FOOD-ITEM_NAME.
+
+      WA_FOOD-QUANTITY = WA_FOOD-QUANTITY + 1.
+      WA_FOOD-PRICE = WA_FDETAIL-PRICE * WA_FOOD-QUANTITY.
+      TPRICE = WA_FOOD-PRICE + PRICE.
+
+    WHEN 'LESS'.
+      IF WA_FOOD-QUANTITY <= 0.
+      ELSE.
+        SELECT SINGLE ITEM_CODE ITEM_NAME PRICE FROM ZG6FOOD_DETAILS INTO CORRESPONDING FIELDS OF WA_FDETAIL WHERE ITEM_NAME = WA_FOOD-ITEM_NAME.
+        WA_FOOD-QUANTITY = WA_FOOD-QUANTITY - 1.
+        WA_FOOD-PRICE = WA_FDETAIL-PRICE * WA_FOOD-QUANTITY.
+        TPRICE = WA_FOOD-PRICE + PRICE.
+      ENDIF.
+
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0600  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0600 OUTPUT.
+*  SET PF-STATUS 'XXXXXXXX'.
+*  SET TITLEBAR 'XXX'.
+
+  SELECT ITEM_NAME FROM ZG6FOOD_DETAILS INTO TABLE IT_FITEM.
+
+  LOOP AT IT_FITEM INTO WA_FITEM.
+    WA_LISTBOX-KEY = WA_FITEM-ITEM_NAME.
+    WA_LISTBOX-TEXT = WA_FITEM-ITEM_NAME.
+    APPEND WA_LISTBOX TO IT_LISTBOX.
+
+  ENDLOOP.
+
+  LD_FIELD = 'WA_FOOD-ITEM_NAME'.
+* STATENAME = LD_FIELD1.
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      ID     = LD_FIELD
+      VALUES = IT_LISTBOX.
+
+  CLEAR:LD_FIELD, WA_LISTBOX ,IT_LISTBOX[].
+
+
+
+  PERFORM IMAGE USING 'FOOD1' 'FOOD_HEAD'.
+  PERFORM IMAGE USING 'FOOD2' 'FOOD_MAN'.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0510  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0510 INPUT.
+  CASE SY-UCOMM.
+    WHEN 'CHECK'.
+      SELECT SINGLE TICKET_NO TRAIN_NO TRAIN_NAME SOURCE DESTINATION DOJ AADHAR_PAN NO_OF_PASSENGERS USERID TOT_FARE
+        FROM ZG6TRAIN_BOOKING INTO CORRESPONDING FIELDS OF BOOK WHERE TICKET_NO = BOOK-TICKET_NO.
+      IF SY-SUBRC = 0.
+        MESSAGE 'TICKET PRESENT' TYPE 'I'.
+      ELSE.
+        MESSAGE 'TICKET DETAILS NOT FOUND' TYPE 'I'.
+      ENDIF.
+
+    WHEN 'BACK'.
+      CLEAR BOOK.
+      LEAVE TO SCREEN 350.
+
+    WHEN 'EXIT'.
+      CLEAR BOOK.
+      LEAVE TO SCREEN 100.
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0530  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0530 INPUT.
+  CASE SY-UCOMM.
+    WHEN 'CHECK'.
+      SELECT TICKET_NO TRAIN_NO TRAIN_NAME SOURCE DESTINATION DOJ AADHAR_PAN NO_OF_PASSENGERS USERID TOT_FARE
+        FROM ZG6TRAIN_BOOKING INTO CORRESPONDING FIELDS OF BOOK WHERE TICKET_NO = BOOK-TICKET_NO .
+      ENDSELECT.
+      IF SY-SUBRC = 0.
+        MESSAGE 'TICKET PRESENT' TYPE 'I'.
+      ELSE.
+        MESSAGE 'TICKET DETAILS NOT FOUND' TYPE 'I'.
+      ENDIF.
+
+    WHEN 'DELETE'.
+      IF BOOK-TICKET_NO IS NOT INITIAL.
+
+          DELETE FROM ZG6TRAIN_BOOKING WHERE TICKET_NO = BOOK-TICKET_NO.
+          IF SY-SUBRC EQ 0.
+            MESSAGE 'TICKET DELETED' TYPE 'I'.
+            CLEAR BOOK.
+          ELSE.
+            MESSAGE 'TICKET NOT DELETED' TYPE 'I'.
+          ENDIF.
+      ELSE.
+        MESSAGE 'ENTER A VALID TICKET NUMBER' TYPE 'E'.
+      ENDIF.
+
+
+    WHEN 'BACK'.
+      CLEAR BOOK.
+      LEAVE TO SCREEN 350.
+
+    WHEN 'EXIT'.
+      CLEAR BOOK.
+      LEAVE TO SCREEN 100.
+
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0350  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0350 INPUT.
+  CASE SY-UCOMM.
+    WHEN 'BOOK'.
+      SELECT *
+         FROM ZG6TRAIN_LIST INTO TABLE ITAB.
+      LEAVE TO SCREEN 1001.
+    WHEN 'CHECK'.
+      LEAVE TO SCREEN 510.
+    WHEN 'CANCEL'.
+      LEAVE TO SCREEN 530.
+    WHEN 'TLIST'.
+      LEAVE TO SCREEN 1001.
+    WHEN 'PRINT'.
+      LEAVE TO SCREEN 704.
+    WHEN 'EDIT'.
+      LEAVE TO SCREEN 351.
+    WHEN 'LOGOUT'.
+      CLEAR USER_ID.
+      LEAVE TO SCREEN 100.
+    WHEN 'EXIT'.
+      LEAVE TO SCREEN 100.
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      FORM  IMAGE
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+*      -->P_0447   TEXT
+*      -->P_0448   TEXT
+*----------------------------------------------------------------------*
+FORM IMAGE  USING CONT PICT.
+
+  DATA: W_LINES TYPE I.
+  TYPES PICT_LINE(256) TYPE C.
+  DATA :
+    CONTAINER TYPE REF TO CL_GUI_CUSTOM_CONTAINER,
+    EDITOR    TYPE REF TO CL_GUI_TEXTEDIT,
+    PICTURE   TYPE REF TO CL_GUI_PICTURE,
+    PICT_TAB  TYPE TABLE OF PICT_LINE,
+    URL(255)  TYPE C.
+  DATA: GRAPHIC_URL(255).
+  DATA: BEGIN OF GRAPHIC_TABLE OCCURS 0,
+          LINE(255) TYPE X,
+        END OF GRAPHIC_TABLE.
+  DATA: L_GRAPHIC_CONV TYPE I.
+  DATA: L_GRAPHIC_OFFS TYPE I.
+  DATA: GRAPHIC_SIZE TYPE I.
+  DATA: L_GRAPHIC_XSTR TYPE XSTRING.
+  .
+  CALL METHOD CL_GUI_CFW=>FLUSH.
+  CREATE OBJECT:
+  CONTAINER EXPORTING CONTAINER_NAME = CONT ,
+  PICTURE EXPORTING PARENT = CONTAINER.
+  CALL METHOD CL_SSF_XSF_UTILITIES=>GET_BDS_GRAPHIC_AS_BMP
+    EXPORTING
+      P_OBJECT = 'GRAPHICS'
+      P_NAME   = PICT
+      P_ID     = 'BMAP'
+      P_BTYPE  = 'BCOL'
+    RECEIVING
+      P_BMP    = L_GRAPHIC_XSTR.
+
+  GRAPHIC_SIZE = XSTRLEN( L_GRAPHIC_XSTR ).
+  L_GRAPHIC_CONV = GRAPHIC_SIZE.
+  L_GRAPHIC_OFFS = 0.
+  WHILE L_GRAPHIC_CONV > 255.
+    GRAPHIC_TABLE-LINE = L_GRAPHIC_XSTR+L_GRAPHIC_OFFS(255).
+    APPEND GRAPHIC_TABLE.
+    L_GRAPHIC_OFFS = L_GRAPHIC_OFFS + 255.
+    L_GRAPHIC_CONV = L_GRAPHIC_CONV - 255.
+  ENDWHILE.
+  GRAPHIC_TABLE-LINE = L_GRAPHIC_XSTR+L_GRAPHIC_OFFS(L_GRAPHIC_CONV).
+  APPEND GRAPHIC_TABLE.
+  CALL FUNCTION 'DP_CREATE_URL'
+    EXPORTING
+      TYPE     = 'IMAGE'
+      SUBTYPE  = 'X-UNKNOWN'
+      SIZE     = GRAPHIC_SIZE
+      LIFETIME = 'T'
+    TABLES
+      DATA     = GRAPHIC_TABLE
+    CHANGING
+      URL      = URL.
+  CALL METHOD PICTURE->LOAD_PICTURE_FROM_URL
+    EXPORTING
+      URL = URL.
+  CALL METHOD PICTURE->SET_DISPLAY_MODE
+    EXPORTING
+      DISPLAY_MODE = PICTURE->DISPLAY_MODE_FIT_CENTER.
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0350  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0350 OUTPUT.
+  PERFORM IMAGE USING 'OPTION2' 'TRAIN_SAFE'.
+  PERFORM IMAGE USING 'OPTION1' 'HEADERTRAIN'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0510  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0510 OUTPUT.
+  SELECT TICKET_NO FROM ZG6TRAIN_BOOKING INTO TABLE IT_TKT WHERE USERID = USER_ID.
+  LOOP AT IT_TKT INTO WA_TKT.
+    WA_LISTBOX-KEY = WA_TKT-TICKET_NO.
+    WA_LISTBOX-TEXT = WA_TKT-TICKET_NO.
+    APPEND WA_LISTBOX TO IT_LISTBOX.
+  ENDLOOP.
+
+  LD_FIELD = 'BOOK-TICKET_NO'.
+
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      ID     = LD_FIELD
+      VALUES = IT_LISTBOX.
+
+  CLEAR:LD_FIELD, WA_LISTBOX ,IT_LISTBOX[].
+
+
+
+  PERFORM IMAGE USING 'PNR1' 'HEADERTRAIN'.
+  PERFORM IMAGE USING 'PNR2' 'PNRSTATUS'.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0701  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0701 OUTPUT.
+  PERFORM IMAGE USING 'SBI2' 'SBI_IMAGE'.
+  PERFORM IMAGE USING 'SBI1' 'SBI_IMAGE2'.
+  PERFORM IMAGE USING 'SBI3' 'SBI_IMAGE3'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0702  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0702 OUTPUT.
+  PERFORM IMAGE USING 'CITI1' 'CITI_IMAGE2'.
+  PERFORM IMAGE USING 'CITI2' 'CITI_IMAGE'.
+  PERFORM IMAGE USING 'CITI3' 'CITI_IMAGE3'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0703  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0703 OUTPUT.
+  PERFORM IMAGE USING 'KOTAK1' 'KOTAK_IMAGE2'.
+  PERFORM IMAGE USING 'KOTAK2' 'KOTAK_IMAGE'.
+  PERFORM IMAGE USING 'KOTAK3' 'KOTAK_IMAGE3'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0700  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0700 OUTPUT.
+  PERFORM IMAGE USING 'PGT1' 'PGT1'.
+  PERFORM IMAGE USING 'PGT2' 'PGT2'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0530  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0530 OUTPUT.
+
+  SELECT TICKET_NO FROM ZG6TRAIN_BOOKING INTO TABLE IT_TKT WHERE USERID = USER_ID.
+
+  LOOP AT IT_TKT INTO WA_TKT.
+    WA_LISTBOX-KEY = WA_TKT-TICKET_NO.
+    WA_LISTBOX-TEXT = WA_TKT-TICKET_NO.
+    APPEND WA_LISTBOX TO IT_LISTBOX.
+
+  ENDLOOP.
+
+  LD_FIELD = 'BOOK-TICKET_NO'.
+
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      ID     = LD_FIELD
+      VALUES = IT_LISTBOX.
+
+  CLEAR:LD_FIELD, WA_LISTBOX ,IT_LISTBOX[].
+
+
+  PERFORM IMAGE USING 'DTB' 'CANCELTIC'.
+  PERFORM IMAGE USING 'HEADERCT' 'HEADERTRAIN'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0100  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0100 OUTPUT.
+  SET PF-STATUS SPACE.
+
+  PERFORM IMAGE USING 'HOME2' 'HEADERTRAIN'.
+  PERFORM IMAGE USING 'HOME3' 'TRAINPIC'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0300  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0300 OUTPUT.
+  PERFORM IMAGE USING 'USER1' 'IRT1'.
+  CLEAR: USER_ID,PASSWORD.
+ENDMODULE.
+
+*-----------------------------------------------------------------
+*---------------------------------------------------------------------
+
+MODULE STATUS_1001 OUTPUT.
+  CLEAR ZG6TRAIN_LIST-SOURCE.
+
+  SELECT SOURCE
+    FROM ZG6TRAIN_LIST
+    INTO TABLE ITSOURCE.
+
+  LOOP AT ITSOURCE INTO WASOURCE.
+    WA_LISTBOX-KEY = WASOURCE-SOURCE.
+    WA_LISTBOX-TEXT = WASOURCE-SOURCE.
+    APPEND WA_LISTBOX TO IT_LISTBOX.
+  ENDLOOP.
+
+  LD_FIELD = 'ZG6TRAIN_LIST-SOURCE'.
+
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      ID     = LD_FIELD
+      VALUES = IT_LISTBOX.
+
+  CLEAR:LD_FIELD, WA_LISTBOX ,IT_LISTBOX[].
+  PERFORM SELECT_DESTINATION.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_1001  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_1001 INPUT.
+
+  CASE OK_CODE.
+    WHEN 'LOGOUT'.
+      CLEAR USER_ID.
+      CALL SCREEN 100.
+
+    WHEN 'BACK'.
+      CALL SCREEN 350.
+    WHEN 'SEARCH'.
+      SELECT TRAIN_NO TRAIN_NAME TRAIN_TYPE RUNDAYS DEPT_TIME ARR_TIME SOURCE DESTINATION PRICE
+         FROM ZG6TRAIN_LIST INTO CORRESPONDING FIELDS OF TABLE ITAB
+        WHERE SOURCE = ZG6TRAIN_LIST-SOURCE AND DESTINATION = ZG6TRAIN_LIST-DESTINATION.
+      IF SY-SUBRC <> 0.
+        MESSAGE 'NO TRAINS FOUND' TYPE 'I'.
+      ENDIF.
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      FORM  SELECT_DESTINATION
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+*  -->  P1        TEXT
+*  <--  P2        TEXT
+*----------------------------------------------------------------------*
+FORM SELECT_DESTINATION .
+
+  CLEAR ZG6TRAIN_LIST-DESTINATION.
+
+  SELECT DESTINATION FROM ZG6TRAIN_LIST
+    INTO TABLE ITDESTN.
+
+  LOOP AT ITDESTN INTO WADESTN.
+    WA_LISTBOX-KEY = WADESTN-DESTINATION.
+    WA_LISTBOX-TEXT = WADESTN-DESTINATION.
+    APPEND WA_LISTBOX TO IT_LISTBOX.
+  ENDLOOP.
+
+  LD_FIELD = 'ZG6TRAIN_LIST-DESTINATION'.
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      ID     = LD_FIELD
+      VALUES = IT_LISTBOX.
+
+  CLEAR:LD_FIELD, WA_LISTBOX ,IT_LISTBOX[].
+ENDFORM.
+
+DATA: IT_PASSBOOK TYPE TABLE OF ZG6TRAIN_BOOKING.
+DATA: DATE1 TYPE SY-DATUM.
+
+DATA:
+  R_CONTAINER1 TYPE REF TO CL_GUI_CUSTOM_CONTAINER,
+  R_GRID1      TYPE REF TO CL_GUI_ALV_GRID.
+
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_1004  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_1004 OUTPUT.
+  SELECT TICKET_NO TRAIN_NO TRAIN_NAME SOURCE DESTINATION DOJ AADHAR_PAN NO_OF_PASSENGERS USERID TOT_FARE
+     FROM ZG6TRAIN_BOOKING INTO CORRESPONDING FIELDS OF TABLE IT_PASSBOOK.
+  SET PF-STATUS 'SCREEN900'.
+
+  CREATE OBJECT R_CONTAINER1
+    EXPORTING
+      CONTAINER_NAME = 'PASSBOOKCONT'.
+
+  CREATE OBJECT R_GRID1
+    EXPORTING
+      I_PARENT = R_CONTAINER1.
+
+  CALL METHOD R_GRID1->SET_TABLE_FOR_FIRST_DISPLAY
+    EXPORTING
+      I_STRUCTURE_NAME = 'ZG6TRAIN_BOOKING'
+    CHANGING
+      IT_OUTTAB        = IT_PASSBOOK.
+
+ENDMODULE.
+
+DATA: IT_TRNLIST TYPE TABLE OF ZG6TRAIN_LIST,
+      DATE2 TYPE SY-DATUM.
+
+DATA:
+  R_CONTAINER TYPE REF TO CL_GUI_CUSTOM_CONTAINER,
+  R_GRID      TYPE REF TO CL_GUI_ALV_GRID.
+
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_1005  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_1005 OUTPUT.
+  SELECT TRAIN_NO TRAIN_NAME TRAIN_TYPE RUNDAYS DEPT_TIME ARR_TIME SOURCE DESTINATION PRICE
+    FROM ZG6TRAIN_LIST INTO CORRESPONDING FIELDS OF TABLE IT_TRNLIST.
+  SET PF-STATUS 'SCREEN900'.
+
+  CREATE OBJECT R_CONTAINER
+    EXPORTING
+      CONTAINER_NAME = 'TRAINCONT'.
+
+  CREATE OBJECT R_GRID
+    EXPORTING
+      I_PARENT = R_CONTAINER.
+
+  CALL METHOD R_GRID->SET_TABLE_FOR_FIRST_DISPLAY
+    EXPORTING
+      I_STRUCTURE_NAME = 'ZG6TRAIN_LIST'
+    CHANGING
+      IT_OUTTAB        = IT_TRNLIST. "PASS INTERNAL TABLE TO DISPLAY ALV FORMAT
+ENDMODULE.
+
+***********************************************************************************************
+DATA: IT_USERREG TYPE TABLE OF ZG6_USER_REG,
+      DATE3 TYPE SY-DATUM.
+
+DATA:
+  R_CONTAINER2 TYPE REF TO CL_GUI_CUSTOM_CONTAINER,
+  R_GRID2      TYPE REF TO CL_GUI_ALV_GRID.
+
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_1006  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_1006 OUTPUT.
+  SELECT USER_ID PASSWORD NAME MAIL_ID CONTACT_NO STATE AGE ADDRESS BLOCK
+     FROM ZG6_USER_REG INTO CORRESPONDING FIELDS OF TABLE IT_USERREG.
+  SET PF-STATUS 'SCREEN900'.
+
+  CREATE OBJECT R_CONTAINER2
+    EXPORTING
+      CONTAINER_NAME = 'USERCONT'.
+
+  CREATE OBJECT R_GRID2
+    EXPORTING
+      I_PARENT = R_CONTAINER2.
+
+  CALL METHOD R_GRID2->SET_TABLE_FOR_FIRST_DISPLAY
+    EXPORTING
+      I_STRUCTURE_NAME = 'ZG6_USER_REG'
+    CHANGING
+      IT_OUTTAB        = IT_USERREG.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0900  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0900 INPUT.
+  CASE SY-UCOMM.
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 810.
+    WHEN 'PASSBOOK'.
+      LEAVE TO SCREEN 1004.
+    WHEN 'TRNLIST'.
+      LEAVE TO SCREEN 1005.
+    WHEN 'USERREG'.
+      LEAVE TO  SCREEN 1006.
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0900  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0900 OUTPUT.
+  SET PF-STATUS 'SCREEN900'.
+ENDMODULE.

@@ -1,0 +1,247 @@
+class CL_ALV_BDS definition
+  public
+  final
+  create public
+
+  global friends IF_ALV_RM_BDS_FRIEND .
+
+public section.
+*"* public components of class CL_ALV_BDS
+*"* do not include other source files here!!!
+
+  constants MC_GRID_NAME type STRING value 'SAP List Viewer'. "#EC NOTEXT
+  constants MC_GRID_EXTENSION type STRING value ' '. "#EC NOTEXT
+  constants MC_GRID_FRONTEND type LVC_FRONT value ' '. "#EC NOTEXT
+  constants MC_EXCEL_NAME type STRING value 'Microsoft Excel'. "#EC NOTEXT
+  constants MC_EXCEL_EXTENSION type STRING value 'XLS'. "#EC NOTEXT
+  constants MC_EXCEL_FRONTEND type LVC_FRONT value 'E'. "#EC NOTEXT
+  constants MC_CRYSTAL_NAME type STRING value 'Crystal Reports'. "#EC NOTEXT
+  constants MC_CRYSTAL_EXTENSION type STRING value 'RPT'. "#EC NOTEXT
+  constants MC_CRYSTAL_FRONTEND type LVC_FRONT value 'C'. "#EC NOTEXT
+  constants MC_LOTUS_NAME type STRING value 'Lotus 1-2-3'. "#EC NOTEXT
+  constants MC_LOTUS_EXTENSION type STRING value '123'. "#EC NOTEXT
+  constants MC_LOTUS_FRONTEND type LVC_FRONT value 'L'. "#EC NOTEXT
+  constants MC_SO_NAME type STRING value 'Star Office'. "#EC NOTEXT
+  constants MC_SO_EXTENSION type STRING value 'SXC'. "#EC NOTEXT
+  constants MC_SO_FRONTEND type LVC_FRONT value 'S'. "#EC NOTEXT
+  constants MC_ODS_NAME type STRING value 'Open Document Spreadsheet'. "#EC NOTEXT
+  constants MC_ODS_EXTENSION type STRING value 'ods'. "#EC NOTEXT
+  constants MC_ODS_FRONTEND type LVC_FRONT value 'O'. "#EC NOTEXT
+  constants MC_XML_NAME type STRING value 'SAP internal'. "#EC NOTEXT
+  constants MC_XLSX_FRONTEND type LVC_FRONT value 'Y'. "#EC NOTEXT
+  constants MC_XLSX_EXTENSION type STRING value 'XLSX'. "#EC NOTEXT
+  constants MC_XML_EXTENSION type STRING value 'XML'. "#EC NOTEXT
+  constants MC_XML_FRONTEND type LVC_FRONT value 'X'. "#EC NOTEXT
+  constants MC_MHTML_NAME type STRING value 'SAP internal'. "#EC NOTEXT
+  constants MC_MHTML_EXTENSION type STRING value 'MHTML'. "#EC NOTEXT
+  constants MC_MHTML_FRONTEND type LVC_FRONT value 'M'. "#EC NOTEXT
+  constants MC_XML_DATA_NAME type STRING value 'SAP internal'. "#EC NOTEXT
+  constants MC_XML_DATA_EXTENSION type STRING value 'XML'. "#EC NOTEXT
+  constants MC_XML_DATA_FRONTEND type LVC_FRONT value 'D'. "#EC NOTEXT
+  constants MC_CLASSNAME type BAPIBDS01-CLASSNAME value 'ALVLAYOUTTEMPLATES'. "#EC NOTEXT
+  constants MC_CLASSTYPE type BAPIBDS01-CLASSTYPE value 'OT'. "#EC NOTEXT
+
+  class-methods CREATE_MASK_FOR_FILEFILTER
+    importing
+      value(I_FRONTEND) type LVC_FRONT
+    exporting
+      value(E_DEFAULT_EXTENSION) type STRING
+    changing
+      !C_MASK type CHAR255 .
+  class-methods GET_TEXT_AS_TABLE
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+    exporting
+      !ET_TEXT type LVC_T_1022
+      !E_TEXT_LENGTH type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS
+    exceptions
+      NOTHING_FOUND
+      ERROR .
+  class-methods GET_TEXT_AS_TABLE_255
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+    exporting
+      !ET_TEXT type W3HTMLTAB
+      !E_TEXT_LENGTH type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS
+    exceptions
+      NOTHING_FOUND
+      ERROR .
+  class-methods GET_BINARY_AS_TABLE
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+    exporting
+      !ET_BINARY type LVC_T_X1022
+      !E_BINARY_LENGTH type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS
+    exceptions
+      NOTHING_FOUND
+      ERROR .
+  class-methods GET_BINARY_AS_TABLE_255
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+    exporting
+      !ET_BINARY type LVC_T_MIME
+      !E_BINARY_LENGTH type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS .
+  class-methods GET_UNIQUE_OBJECTKEY
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+    exporting
+      !E_OBJECTKEY type BDS_TYPEID
+    exceptions
+      UNKNOWN_CLASSNAME .
+  class-methods CREATE_BINARY_FROM_TABLE
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+      !IT_BINARY type LVC_T_X1022
+      !I_BYTE_SIZE type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS .
+  class-methods CREATE_TEXT_FROM_TABLE
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+      !IT_TEXT type LVC_T_1022
+      !I_BYTE_SIZE type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS .
+  class-methods UPDATE_EXTOBJID
+    importing
+      !IS_ALV_BDS type LVC_S_BDS
+    exceptions
+      INVALID_EXTOBJID
+      TEMPLATE_NOT_FOUND .
+  class-methods CREATE_TEXT_FROM_TABLE_255
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+      !IT_TEXT type LVC_T_TEXT
+      !I_BYTE_SIZE type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS .
+  class-methods CREATE_BINARY_FROM_TABLE_255
+    importing
+      !I_CLASSNAME type BDS_CLSNAM
+      !I_CLASSTYPE type BDS_CLSTYP
+      !IT_BINARY type LVC_T_MIME
+      !I_BYTE_SIZE type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS .
+  methods CONSTRUCTOR
+    importing
+      value(IS_VARIANT) type DISVARIANT
+      value(IS_LAYOUT) type LVC_S_LAYO
+      !IS_ALV_BDS type LVC_S_BDS
+      value(IR_CL_ALV_VARIANT) type ref to CL_ALV_VARIANT optional .
+  methods BDS_DELETE
+    importing
+      value(IS_VARIANT) type DISVARIANT
+      value(IS_LAYOUT) type LVC_S_LAYO .
+  methods BDS_IMPORT
+    importing
+      value(IS_VARIANT) type DISVARIANT
+      value(I_CLIENT_FROM) type MANDT
+      value(I_CLIENT_TO) type MANDT
+      value(IS_LAYOUT) type LVC_S_LAYO .
+  type-pools SBDST .
+  methods BDS_TRANSPORT
+    importing
+      value(IS_VARIANT) type DISVARIANT
+      value(IS_LAYOUT) type LVC_S_LAYO
+    changing
+      !CT_COMMFILE_ENTRIES type SBDST_COMMFILE_ENTRIES .
+  methods GET_VALUES
+    importing
+      value(I_OK_CODE) type SY-UCOMM
+    exporting
+      !ET_ALV_BDS type LVC_T_BDS
+      !ES_BDS_WITH_URL type LVC_S_BDS
+      value(E_FRONTEND) type LVC_FRONT
+      value(E_FRONTEND_TMP) type LVC_FRONT .
+  methods GET_VIEW
+    importing
+      value(I_TEMP_VIEW) type CHAR01 optional
+    exporting
+      !E_FRONTEND type LVC_FRONT .
+  methods MAINTAIN_CANCEL .
+  methods MAINTAIN_CONTINUE
+    exporting
+      value(ES_ALV_BDS) type LVC_S_BDS
+    exceptions
+      CANCEL
+      NO_TEMPLATE_FOR_VIEW
+      BDS_ERROR .
+  methods MAINTAIN_DELETE
+    importing
+      value(IT_SEL_ROWS) type LVC_T_ROW
+      value(IS_VARIANT) type DISVARIANT
+      value(IS_LAYOUT) type LVC_S_LAYO .
+  methods MAINTAIN_RESET .
+  methods MAINTAIN_DOWNLOAD
+    importing
+      value(IT_SEL_ROWS) type LVC_T_ROW
+      value(IS_VARIANT) type DISVARIANT
+      value(IS_LAYOUT) type LVC_S_LAYO .
+  methods MAINTAIN_REFRESH
+    importing
+      value(IS_VARIANT) type DISVARIANT
+      value(IS_LAYOUT) type LVC_S_LAYO .
+  methods MAINTAIN_SAVE
+    importing
+      value(IS_VARIANT) type DISVARIANT
+      value(I_BDS_SAVE) type C default 'X'
+    changing
+      value(CS_LAYOUT) type LVC_S_LAYO
+    exceptions
+      IRREGULAR_STATE .
+  methods MAINTAIN_STANDARD
+    importing
+      value(IT_SEL_ROWS) type LVC_T_ROW
+    exceptions
+      IRREGULAR_CONDITION .
+  methods MAINTAIN_STORNO .
+  methods MAINTAIN_UPLOAD
+    importing
+      value(IS_VARIANT) type DISVARIANT
+      value(IS_LAYOUT) type LVC_S_LAYO
+    exceptions
+      BDS_ERROR .
+  methods SELECT_TEMPLATE
+    importing
+      value(I_FRONTEND) type LVC_FRONT optional
+      value(IS_VARIANT) type DISVARIANT
+      value(IS_LAYOUT) type LVC_S_LAYO
+      !I_TABLE_REQUESTED type FLAG
+      value(I_SUPRESS_MESSAGE) type FLAG optional
+    exporting
+      !ET_CONTENT type SBDST_CONTENT
+      !E_FILESIZE type INT4
+    changing
+      !CS_ALV_BDS type LVC_S_BDS
+    exceptions
+      CANCEL
+      NO_CHANGE
+      NOT_FOUND
+      NO_AUTHORISATION
+      INTERNAL_ERROR .
+  methods SET_VALUES
+    importing
+      value(IS_BDS_DEFLT) type LVC_S_BDS optional
+      value(IT_FILTER) type LVC_T_FILT optional
+      value(I_SUPRESS_MESSAGE) type FLAG optional .
+  methods SET_VIEW
+    importing
+      value(I_FRONTEND) type LVC_FRONT
+      value(I_TEMP_VIEW) type CHAR01 optional .

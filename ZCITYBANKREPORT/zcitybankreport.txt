@@ -1,0 +1,95 @@
+*&---------------------------------------------------------------------*
+*& Report ZCITYBANKREPORT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZCITYBANKREPORT.
+
+TABLES : ZG6CITIBANK.
+
+TYPES: ty_outputparams type sfpoutputparams,
+       ty_docparams type sfpdocparams.
+
+data wa_outputparams type sfpoutputparams.
+
+data wa_docparams type sfpdocparams.
+
+DATA gv_fm_name type rs38l_fnam.
+DATA :
+      ITAB1 TYPE TABLE OF ZG6CITIBANK.
+
+
+*INCLUDE  ZCAP_FM_ADOBE2_PROGRAM_INCL.
+*Above declaration of data and types can be put in include
+*PARAMETERS: TPRICE1 type I,
+*            ACCOUNT TYPE ZG6CITIBANK-ACC_NO.
+
+DATA : CITI TYPE ZG6CITIBANK-ACC_NO,
+       CITYTPRICE TYPE I.
+IMPORT  CITYTPRICE FROM MEMORY ID 'IDNO2'.
+IMPORT  CITI FROM MEMORY ID 'IDNO3'.
+
+START-OF-SELECTION.
+
+wa_outputparams-DEVICE = 'PRINTER'.
+wa_outputparams-DEST  = 'LP01'.
+wa_outputparams-NODIALOG = 'X'.
+wa_outputparams-PREVIEW  = 'X'.
+
+CALL FUNCTION 'FP_JOB_OPEN'
+  CHANGING
+    IE_OUTPUTPARAMS       = wa_outputparams
+* EXCEPTIONS
+*   CANCEL                = 1
+*   USAGE_ERROR           = 2
+*   SYSTEM_ERROR          = 3
+*   INTERNAL_ERROR        = 4
+*   OTHERS                = 5
+          .
+IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+ENDIF.
+
+CALL FUNCTION 'FP_FUNCTION_MODULE_NAME'
+  EXPORTING
+   I_NAME                     = 'ZCITYBANKSLIP'    " Adobe form name.
+ IMPORTING
+   E_FUNCNAME                 = gv_fm_name
+*   E_INTERFACE_TYPE           =
+*   EV_FUNCNAME_INBOUND        =
+          .
+wa_docparams-langu = 'E'.
+wa_docparams-country = 'IN'.
+
+SELECT ACC_NO
+NAMEOC BAL FROM ZG6CITIBANK INTO CORRESPONDING FIELDS OF TABLE ITAB1 WHERE ACC_NO = CITI.
+
+CALL FUNCTION gv_fm_name
+  EXPORTING
+   /1BCDWB/DOCPARAMS        = wa_docparams
+    itabtable                = ITAB1
+    tprice                   = CITYTPRICE
+* IMPORTING
+*   /1BCDWB/FORMOUTPUT       =
+* EXCEPTIONS
+*   USAGE_ERROR              = 1
+*   SYSTEM_ERROR             = 2
+*   INTERNAL_ERROR           = 3
+*   OTHERS                   = 4
+          .
+IF sy-subrc <> 0.
+* Implement suitable error handling here
+ENDIF.
+
+CALL FUNCTION 'FP_JOB_CLOSE'
+* IMPORTING
+*   E_RESULT             =
+* EXCEPTIONS
+*   USAGE_ERROR          = 1
+*   SYSTEM_ERROR         = 2
+*   INTERNAL_ERROR       = 3
+*   OTHERS               = 4
+          .
+IF SY-SUBRC <> 0.
+* Implement suitable error handling here
+ENDIF.

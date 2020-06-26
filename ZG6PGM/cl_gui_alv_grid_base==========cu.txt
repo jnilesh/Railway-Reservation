@@ -1,0 +1,43 @@
+class CL_GUI_ALV_GRID_BASE definition
+  public
+  inheriting from CL_GUI_CONTROL
+  create public
+
+  global friends IF_ALV_RU_GRID_BASE_FRIEND .
+
+public section.
+*"* public components of class CL_GUI_ALV_GRID_BASE
+*"* do not include other source files here!!!
+  type-pools CTLD .
+
+  interfaces IF_GUI_DYNAMIC_DATA .
+
+  constants CO_WEBSTLE_RESET_OPTCOLWIDTH type LVC_STYLE value '00000080'. "#EC NOTEXT
+  constants CO_WEBSTLYE_NOF1 type LVC_STYLE value '00010000'. "#EC NOTEXT
+  constants CO_WEBSTYLE_INTEGRATED_HEADERS type LVC_STYLE value '00000001'. "#EC NOTEXT
+  constants CO_WEBSTYLE_NOCLIP type LVC_STYLE value '00000002'. "#EC NOTEXT
+  constants CO_WEBSTYLE_WRAP type LVC_STYLE value '00000004'. "#EC NOTEXT
+  constants CO_WEBSTYLE_XSLT type LVC_STYLE value '00001000'. "#EC NOTEXT
+  data M_GUID type SYSUUID_25 read-only .
+
+  type-pools SOI .
+  methods CONSTRUCTOR
+    importing
+      !LIFETIME type I optional
+      value(SHELLSTYLE) type I optional
+      value(PARENT) type ref to CL_GUI_CONTAINER optional
+      !DEBUGPARENT type ref to CL_GUI_CONTAINER optional
+      !MODE type C optional
+      !DOC_TYPE type SOI_DOCUMENT_TYPE default 'Excel.Sheet'
+      !DOC_URL type BDS_URI optional
+      value(NAME) type STRING optional .
+
+  methods DISPATCH
+    redefinition .
+  methods FREE
+    redefinition .
+  methods SET_REGISTERED_EVENTS
+    redefinition .
+  type-pools CNTL .
+  type-pools OLE2 .
+  type-pools T .

@@ -1,0 +1,253 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0700I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0700  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0700 INPUT.
+CASE SY-UCOMM.
+  WHEN 'PROCEED'.
+ IF  SBIBANK = 'X' .
+    CALL SCREEN 0701.
+
+ELSEIF  CITIBANK = 'X'  .
+    CALL SCREEN 0702.
+
+ ELSEIF KOTAKBANK = 'X'  .
+    CALL SCREEN 0703.
+
+  ENDIF.
+    WHEN 'CANCEL' .
+      clear : book , WA_FOOD.
+      MESSAGE 'Ticket Booking Canceled By User.' TYPE 'I'.
+       CALL SCREEN 0350.
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0701  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0701 INPUT.
+ CASE SY-UCOMM.
+  WHEN 'PROCEED'.
+
+              SELECT SINGLE ACC_NO FROM zg6sbibank INTO WASBI WHERE ACC_NO EQ WASBI-ACC_NO
+          AND ATMPIN EQ PIN .
+          if sy-subrc = 0 .
+
+if TPRICE IS INITIAL.
+        MESSAGE 'Enter A Valid Amount...' TYPE 'I'.
+ELSE.
+          PERFORM BALCHECK.
+ENDIF.
+
+               elseif sy-subrc <> 0.
+                    clear pin.
+            MESSAGE 'Enter Correct Pin...' TYPE 'I'.
+
+          elseif PIN IS INITIAL.
+        MESSAGE 'Enter A Valid Pin...' TYPE 'I'.
+          ENDIF.
+
+
+WHEN 'BACK'.
+  CALL SCREEN 0700.
+WHEN 'CANCEL'.
+      clear : book , WA_FOOD.
+      MESSAGE 'Ticket Booking Canceled By User.' TYPE 'I'.
+       CALL SCREEN 0350.
+
+    WHEN 'CHECK' .
+      SELECT ACC_NO NAMEOC ATMPIN BAL CVV
+        FROM zg6sbibank INTO CORRESPONDING FIELDS OF TABLE ITSBI WHERE ACC_NO = WASBI-ACC_NO.
+              IF SY-SUBRC = 0.
+      MESSAGE 'Account Found' TYPE 'I'.
+     LOOP AT ITSBI INTO WASBI.
+     ENDLOOP.
+    ELSE.
+          CLEAR: PIN , WASBI-NAMEOC.
+      MESSAGE 'No Account Found' TYPE 'I'.
+    ENDIF.
+      ENDCASE.
+
+ENDMODULE.
+      FORM BALCHECK.
+
+
+   SELECT SINGLE ACC_NO FROM zg6SBIbank INTO WASBI
+     WHERE ACC_NO EQ WASBI-ACC_NO
+          AND BAL GT TPRICE.
+
+  IF sy-subrc = 0.
+    WASBI-BAL = WASBI-BAL - TPRICE.
+
+ UPDATE ZG6SBIBANK
+      SET BAL = WASBI-BAL
+      WHERE ACC_NO = WASBI-ACC_NO.
+ CLEAR : WASBI-ACC_NO , WASBI-NAMEOC  , PIN.
+PERFORM SUCCESSAPP1.
+MESSAGE 'Payment Successful' TYPE 'I'.
+ticno1 = book-ticket_no.
+          CALL SCREEN 0704.
+          ELSE.
+            MESSAGE 'Insufficient Balance' TYPE 'I'.
+            ENDIF.
+            ENDFORM.
+
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0702  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0702 INPUT.
+ CASE SY-UCOMM.
+   CITI = WACITI-ACC_NO.
+  WHEN 'PROCEED'.
+
+              SELECT SINGLE ACC_NO FROM zg6CITIbank INTO WACITI WHERE ACC_NO EQ WACITI-ACC_NO
+          AND ATMPIN EQ PIN1 .
+          if sy-subrc = 0 .
+
+if TPRICE IS INITIAL.
+        MESSAGE 'Enter A Valid Amount...' TYPE 'I'.
+ELSE.
+          PERFORM BALCHECK1.
+ENDIF.
+
+               elseif sy-subrc <> 0.
+                    clear pin1.
+            MESSAGE 'Enter Correct Pin...' TYPE 'I'.
+
+          elseif PIN1 IS INITIAL.
+        MESSAGE 'Enter A Valid Pin...' TYPE 'I'.
+          ENDIF.
+WHEN 'BACK'.
+  CALL SCREEN 0700.
+    WHEN 'CHECK' .
+      SELECT  ACC_NO NAMEOC ATMPIN BAL
+        FROM zg6CITibank INTO CORRESPONDING FIELDS OF TABLE ITCITI WHERE ACC_NO = WACITI-ACC_NO.
+              IF SY-SUBRC = 0.
+      MESSAGE 'Account Found' TYPE 'I'.
+     LOOP AT ITCITI INTO WACITI.
+     ENDLOOP.
+    ELSE.
+          CLEAR: PIN , WACITI-NAMEOC.
+      MESSAGE 'No Account Found' TYPE 'I'.
+    ENDIF.
+
+
+
+WHEN 'CANCEL' .
+      clear : book , WA_FOOD.
+      MESSAGE 'Ticket Booking Canceled By User.' TYPE 'I'.
+       CALL SCREEN 0350.
+      ENDCASE.
+ENDMODULE.
+FORM BALCHECK1.
+   SELECT SINGLE ACC_NO FROM zg6CITIbank INTO WACITI
+     WHERE ACC_NO EQ WACITI-ACC_NO
+          AND BAL GT TPRICE.
+  IF sy-subrc = 0.
+    WACITI-BAL = WACITI-BAL - TPRICE.
+ UPDATE ZG6CITIBANK
+      SET BAL = WACITI-BAL
+      WHERE ACC_NO = WACITI-ACC_NO.
+ CLEAR : WACITI-ACC_NO , WACITI-NAMEOC  , PIN1.
+ MESSAGE 'Payment Successful' TYPE 'I'.
+ PERFORM SUCCESSAPP1.
+ ticno1 = book-ticket_no.
+
+
+
+   CITYTPRICE = TPRICE.
+        EXPORT   CITYTPRICE TO MEMORY ID 'IDNO2'.
+                EXPORT   CITI TO MEMORY ID 'IDNO3'.
+
+        SUBMIT ZCITYBANKREPORT  AND RETURN .
+
+          CALL SCREEN 0704.
+          ELSE.
+            MESSAGE 'Insufficient Balance' TYPE 'I'.
+            ENDIF.
+            ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0703  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0703 INPUT.
+ CASE SY-UCOMM.
+  WHEN 'PROCEED'.
+SELECT SINGLE ACC_NO FROM zG6KOTAKbank INTO WAKOTAK
+  WHERE ACC_NO EQ WAKOTAK-ACC_NO
+          AND ATMPIN EQ PIN2 .
+          if sy-subrc = 0 .
+
+if TPRICE IS INITIAL.
+        MESSAGE 'Enter A Valid Amount...' TYPE 'I'.
+ELSE.
+          PERFORM BALCHECK2.
+ENDIF.
+
+               elseif sy-subrc <> 0.
+                    clear pin2.
+            MESSAGE 'Enter Correct Pin...' TYPE 'I'.
+
+          elseif PIN2 IS INITIAL.
+        MESSAGE 'Enter A Valid Pin...' TYPE 'I'.
+          ENDIF.
+WHEN 'BACK'.
+  CALL SCREEN 0700.
+
+
+    WHEN 'CHECK' .
+      SELECT  ACC_NO NAMEOC ATMPIN BAL
+        FROM zg6KOTAKbank INTO CORRESPONDING FIELDS OF TABLE ITKOTAK WHERE ACC_NO = WAKOTAK-ACC_NO.
+      IF SY-SUBRC = 0.
+      MESSAGE 'Account Found' TYPE 'I'.
+     LOOP AT ITKOTAK INTO WAKOTAK.
+     ENDLOOP.
+    ELSE.
+          CLEAR: PIN , WAKOTAK-NAMEOC.
+      MESSAGE 'No Account Found' TYPE 'I'.
+    ENDIF.
+
+
+WHEN 'CANCEL' .
+      clear : book , WA_FOOD.
+      MESSAGE 'Ticket Booking Canceled By User.' TYPE 'I'.
+       CALL SCREEN 0350.
+           ENDCASE.
+ENDMODULE.
+
+   FORM BALCHECK2.
+   SELECT SINGLE ACC_NO FROM zg6KOTAKbank INTO WAKOTAK
+     WHERE ACC_NO EQ WAKOTAK-ACC_NO
+          AND BAL GT TPRICE.
+
+  IF sy-subrc = 0.
+    WAKOTAK-BAL = WAKOTAK-BAL - TPRICE.
+
+ UPDATE ZG6KOTAKBANK
+      SET BAL = WAKOTAK-BAL
+      WHERE ACC_NO = WAKOTAK-ACC_NO.
+ CLEAR : WAKOTAK-ACC_NO , WAKOTAK-NAMEOC  , PIN2.
+ MESSAGE 'Payment Successful' TYPE 'I'.
+ PERFORM SUCCESSAPP1.
+ticno1 = book-ticket_no.
+          CALL SCREEN 0704.
+          ELSE.
+            MESSAGE 'Insufficient Balance' TYPE 'I'.
+            ENDIF.
+            ENDFORM.
+
+ FORM SUCCESSAPP1.
+  INSERT ZG6TRAIN_BOOKING FROM BOOK.
+  IF WA_FOOD IS INITIAL.
+  ELSE.
+  INSERT ZG6FOOD_BOOKING FROM WA_FOOD.
+  ENDIF.
+  ENDFORM.

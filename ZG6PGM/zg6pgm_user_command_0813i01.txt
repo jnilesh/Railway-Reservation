@@ -1,0 +1,27 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0813I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0813  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0813 INPUT.
+  CASE SY-UCOMM.
+    WHEN 'REFRESH'.
+      SELECT * FROM ZG6FOOD_DETAILS INTO TABLE IT_FDETAIL.
+      REFRESH CONTROL 'TC2' FROM SCREEN '813'.
+    WHEN 'INSERT'.
+      IF LS = 'X'.
+        INSERT ZG6FOOD_DETAILS FROM WA_FDETAIL.
+        IF SY-SUBRC = 0.
+          MESSAGE 'DATA INSERTED' TYPE 'I'.
+        ENDIF.
+        REFRESH CONTROL 'TC2' FROM SCREEN '0813'.
+      ELSE.
+      APPEND INITIAL LINE TO IT_FDETAIL.
+      TC2-LINES = LINES( IT_FDETAIL ).
+    ENDIF.
+    REFRESH CONTROL 'TC2' FROM SCREEN '0813'.
+ENDCASE.
+ENDMODULE.

@@ -1,0 +1,89 @@
+*&---------------------------------------------------------------------*
+*& Report ZG6RAIL_PASSBOOKGALV_REP
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZG6RAIL_PASSBOOKGALV_REP.
+TYPE-POOLS: SLIS.
+TABLES: ZG6TRAIN_BOOKING.
+
+TYPES: BEGIN OF TY_PASSBOOK,
+        TICKET_NO TYPE ZG6DETICKET_NO,
+        TRAIN_NO TYPE ZG6TRNNO,
+        TRAIN_NAME TYPE ZG6TRNNAME,
+        SOURCE TYPE ZG6DESOURCE,
+        DESTINATION TYPE ZG6DEDEST,
+        DOJ TYPE ZG6DEDOJ,
+        AADHAR_PAN TYPE ZG6DEAADHAR,
+        NO_OF_PASSENGERS TYPE ZG6DENO_OF_PASS,
+        COACH TYPE ZG6DECOACH,
+        USERID TYPE ZG6DEUSERID,
+        TOT_FARE TYPE ZG6DETFARE,
+        PASSNAME1 TYPE ZPASSNAME1,
+        PASSNAME2 TYPE ZPASSNAME2,
+        PASSNAME3 TYPE ZPASSNAME3,
+        PASSNAME4 TYPE ZPASSNAME4,
+       END OF TY_PASSBOOK.
+
+DATA: IT_PASSBOOK TYPE TABLE OF TY_PASSBOOK,
+      WA_PASSBOOK TYPE TY_PASSBOOK.
+DATA: IT_LISTHEADER TYPE SLIS_T_LISTHEADER,
+      WA_LISTHEADER TYPE SLIS_LISTHEADER.
+
+DATA:
+  r_container TYPE REF TO cl_gui_custom_container,
+  r_grid      TYPE REF TO cl_gui_alv_grid.
+
+START-OF-SELECTION.
+  SELECT TICKET_NO
+         TRAIN_NO
+         TRAIN_NAME
+         SOURCE
+         DESTINATION
+         DOJ
+         AADHAR_PAN
+         NO_OF_PASSENGERS
+         COACH
+         USERID
+         TOT_FARE
+         PASSNAME1
+         PASSNAME2
+         PASSNAME3
+         PASSNAME4
+         FROM ZG6TRAIN_BOOKING INTO TABLE IT_PASSBOOK.
+
+      CALL SCREEN 1004.
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_1004  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE status_1004 OUTPUT.
+*  SET PF-STATUS 'xxxxxxxx'.
+*  SET TITLEBAR 'xxx'.
+   SET TITLEBAR 'xxx'.
+   CREATE OBJECT r_container
+    EXPORTING
+      container_name = 'PASSBOOKCONT'.
+
+  CREATE OBJECT r_grid
+    EXPORTING
+      i_parent = r_container.
+
+  CALL METHOD r_grid->set_table_for_first_display
+    EXPORTING
+      i_structure_name = 'ZG6TRAIN_BOOKING'
+    CHANGING
+      it_outtab        = IT_PASSBOOK.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_1004  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_1004 INPUT.
+CASE sy-ucomm.
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 811.
+  ENDCASE.
+ENDMODULE.

@@ -1,0 +1,90 @@
+*&---------------------------------------------------------------------*
+*& Report ZFOOD_FORM_DRIVER
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZFOOD_FORM_DRIVER.
+
+
+TABLES ZG6FOOD_BOOKING.
+DATA: ITAB11 TYPE TABLE OF ZG6FOOD_BOOKING,
+      WA TYPE ZG6FOOD_BOOKING,
+      W_CPARAM TYPE SSFCTRLOP,
+      W_OUTOPTIONS TYPE SSFCOMPOP.
+
+DATA FM TYPE RS38L_FNAM.
+ W_CPARAM-NO_DIALOG = 'X'.
+
+DATA TICNO TYPE ZG6FOOD_BOOKING-TICKET_NO.
+IMPORT TICNO FROM MEMORY ID 'IDNO1'.
+
+
+CALL FUNCTION 'SSF_FUNCTION_MODULE_NAME'
+  EXPORTING
+    formname                 = 'Z_RAIL_SMARTFORM'
+*   VARIANT                  = ' '
+*   DIRECT_CALL              = ' '
+IMPORTING
+  FM_NAME                  = FM
+ .
+IF sy-subrc <> 0.
+* Implement suitable error handling here
+ENDIF.
+*SELECT SINGLE TICKET_NO ITEM_NAME QUANTITY PRICE USERID
+*    FROM ZG6FOOD_BOOKING INTO CORRESPONDING FIELDS OF
+*  TABLE ITAB11
+*  WHERE TICKET_NO = TICNO.
+
+*CALL FUNCTION FM
+*  EXPORTING
+**   ARCHIVE_INDEX              =
+**   ARCHIVE_INDEX_TAB          =
+**   ARCHIVE_PARAMETERS         =
+**  CONTROL_PARAMETERS         = W_CPARAM
+**   MAIL_APPL_OBJ              =
+**   MAIL_RECIPIENT             =
+**   MAIL_SENDER                =
+**   OUTPUT_OPTIONS             =
+**   USER_SETTINGS              = 'X'
+*    ticno                      = TICNO
+** IMPORTING
+**   DOCUMENT_OUTPUT_INFO       =
+**   JOB_OUTPUT_INFO            =
+**   JOB_OUTPUT_OPTIONS         =
+** EXCEPTIONS
+**   FORMATTING_ERROR           = 1
+**   INTERNAL_ERROR             = 2
+**   SEND_ERROR                 = 3
+**   USER_CANCELED              = 4
+**   OTHERS                     = 5
+*          .
+*IF sy-subrc <> 0.
+** Implement suitable error handling here
+*ENDIF.
+
+CALL FUNCTION FM
+  EXPORTING
+*   ARCHIVE_INDEX              =
+*   ARCHIVE_INDEX_TAB          =
+*   ARCHIVE_PARAMETERS         =
+*   CONTROL_PARAMETERS         =
+*   MAIL_APPL_OBJ              =
+*   MAIL_RECIPIENT             =
+*   MAIL_SENDER                =
+*   OUTPUT_OPTIONS             =
+*   USER_SETTINGS              = 'X'
+    ticno                      = TICNO
+* IMPORTING
+*   DOCUMENT_OUTPUT_INFO       =
+*   JOB_OUTPUT_INFO            =
+*   JOB_OUTPUT_OPTIONS         =
+* EXCEPTIONS
+*   FORMATTING_ERROR           = 1
+*   INTERNAL_ERROR             = 2
+*   SEND_ERROR                 = 3
+*   USER_CANCELED              = 4
+*   OTHERS                     = 5
+          .
+IF sy-subrc <> 0.
+* Implement suitable error handling here
+ENDIF.

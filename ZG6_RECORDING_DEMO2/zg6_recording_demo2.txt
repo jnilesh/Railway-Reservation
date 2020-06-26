@@ -1,0 +1,144 @@
+report ZG6_RECORDING_DEMO2
+       no standard page heading line-size 255.
+
+
+TYPES : BEGIN OF TYTAB,
+  TRAIN_NO TYPE ZG6TRAIN_LIST-TRAIN_NO,
+  TRAIN_NAME TYPE ZG6TRAIN_LIST-TRAIN_NAME,
+  RUNDAYS TYPE ZG6TRAIN_LIST-RUNDAYS,
+  TRAIN_TYPE TYPE ZG6TRAIN_LIST-TRAIN_TYPE,
+  DEPT_TIME TYPE ZG6TRAIN_LIST-DEPT_TIME,
+  ARR_TIME TYPE ZG6TRAIN_LIST-ARR_TIME,
+  SOURCE TYPE ZG6TRAIN_LIST-SOURCE,
+  DESTINATION TYPE ZG6TRAIN_LIST-DESTINATION,
+  PRICE TYPE ZG6TRAIN_LIST-PRICE,
+  END OF TYTAB.
+
+  DATA : ITAB TYPE TABLE OF TYTAB,
+        WA TYPE TYTAB,
+        ITBDC TYPE BDCDATA OCCURS 0 WITH HEADER LINE.
+
+
+
+  PARAMETERS : PFILE TYPE RLGRAP-FILENAME.
+
+  AT SELECTION-SCREEN   ON VALUE-REQUEST FOR PFILE.
+
+  DATA FILE TYPE STRING.
+  CALL FUNCTION 'F4_FILENAME'
+   EXPORTING
+     PROGRAM_NAME        = SYST-CPROG
+     DYNPRO_NUMBER       = SYST-DYNNR
+
+   IMPORTING
+     FILE_NAME           = PFILE
+            .
+  FILE = PFILE.
+
+   CALL FUNCTION 'GUI_UPLOAD'
+     EXPORTING
+       filename                      = FILE
+      FILETYPE                      = 'ASC'
+      HAS_FIELD_SEPARATOR           = 'X'
+*      HEADER                        =
+     tables
+       data_tab                      = ITAB
+*    CHANGING
+*      ISSCANPERFORMED               = ' '
+*    EXCEPTIONS
+*      FILE_OPEN_ERROR               = 1
+*      FILE_READ_ERROR               = 2
+*      NO_BATCH                      = 3
+*      GUI_REFUSE_FILETRANSFER       = 4
+*      INVALID_TYPE                  = 5
+*      NO_AUTHORITY                  = 6
+*      UNKNOWN_ERROR                 = 7
+*      BAD_DATA_FORMAT               = 8
+*      HEADER_NOT_ALLOWED            = 9
+*      SEPARATOR_NOT_ALLOWED         = 10
+*      HEADER_TOO_LONG               = 11
+*      UNKNOWN_DP_ERROR              = 12
+*      ACCESS_DENIED                 = 13
+*      DP_OUT_OF_MEMORY              = 14
+*      DISK_FULL                     = 15
+*      DP_TIMEOUT                    = 16
+*      OTHERS                        = 17
+             .
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+
+
+
+start-of-selection.
+
+CALL FUNCTION 'BDC_OPEN_GROUP'
+ EXPORTING
+   CLIENT                    = SY-MANDT
+*   DEST                      = FILLER8
+   GROUP                     = 'SWARA'
+*   HOLDDATE                  = FILLER8
+   KEEP                      = 'X'
+   USER                      = SY-UNAME
+.
+
+.
+LOOP AT ITAB INTO WA.
+perform bdc_dynpro      using 'ZG6_RECORDING' '0100'.
+perform bdc_field       using 'BDC_CURSOR'
+                              'WA_TRAIN-TRAIN-NO'.
+    PERFORM bdc_field       USING 'BDC_OKCODE'
+                                  '/00'.
+perform bdc_field       using 'WA_TRAIN-TRAIN_NO'
+                              WA-TRAIN_NO.
+perform bdc_field       using 'WA_TRAIN-TRAIN_NAME'
+                              WA-TRAIN_NAME.
+perform bdc_field       using 'WA_TRAIN-RUNDAYS'
+                              WA-RUNDAYS.
+perform bdc_field       using 'WA_TRAIN-TRAIN_TYPE'
+                              WA-TRAIN_TYPE.
+perform bdc_field       using 'WA_TRAIN-DEPT_TIME'
+                             WA-DEPT_TIME.
+perform bdc_field       using 'WA_TRAIN-ARR_TIME'
+                             WA-ARR_TIME.
+perform bdc_field       using 'WA_TRAIN-SOURCE'
+                              WA-SOURCE.
+perform bdc_field       using 'WA_TRAIN-DESTINATION'
+                              WA-DESTINATION.
+perform bdc_field       using 'WA_TRAIN-PRICE'
+                              WA-PRICE.
+perform bdc_field       using 'BDC_OKCODE'
+                              '=SUBMIT'.
+CALL FUNCTION 'BDC_INSERT'
+ EXPORTING
+   TCODE                  = 'ZG6REC'
+
+  TABLES
+    dynprotab              = ITBDC
+.
+REFRESH ITBDC.
+
+ENDLOOP.
+CALL FUNCTION 'BDC_CLOSE_GROUP'
+* EXCEPTIONS
+*   NOT_OPEN          = 1
+*   QUEUE_ERROR       = 2
+*   OTHERS            = 3
+          .
+IF sy-subrc <> 0.
+* Implement suitable error handling here
+ENDIF.
+FORM BDC_FIELD USING A B.
+  CLEAR ITBDC.
+  ITBDC-FNAM = A.
+  ITBDC-FVAL = B.
+  APPEND itBDC.
+  ENDFORM.
+FORM BDC_DYNPRO USING C D.
+  CLEAR ITBDC.
+  ITBDC-DYNPRO = D.
+  ITBDC-PROGRAM = C.
+  itBDC-dynbegin = 'X'.
+  APPEND itBDC.
+ ENDFORM.

@@ -1,0 +1,30 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0812I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      MODULE  USER_COMMAND_0812  INPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0812 INPUT.
+  CASE OK_CODE.
+
+    WHEN 'REFRESH'.
+      SELECT * FROM ZG6_USER_REG INTO TABLE ITUSER.
+      REFRESH CONTROL 'TC3' FROM SCREEN '812'.
+
+    WHEN 'ADD'.
+      IF LS3 = 'X'.
+        INSERT ZG6_USER_REG FROM WA_USER.
+        IF SY-SUBRC = 0.
+          MESSAGE 'DATA INSERTED' TYPE 'I'.
+        ENDIF.
+        REFRESH CONTROL 'TC3' FROM SCREEN '0812'.
+      ELSE.
+        APPEND INITIAL LINE TO ITUSER.
+        TC3-LINES = LINES( ITUSER ).
+      ENDIF.
+      REFRESH CONTROL 'TC3' FROM SCREEN '0812'.
+
+  ENDCASE.
+ENDMODULE.

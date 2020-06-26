@@ -1,0 +1,143 @@
+class CL_GUI_PICTURE definition
+  public
+  inheriting from CL_GUI_CONTROL
+  create public .
+
+public section.
+*"* public components of class CL_GUI_PICTURE
+*"* do not include other source files here!!!
+
+  interfaces IF_DRAGDROP .
+
+  constants EVENTID_PICTURE_CLICK type I value 2. "#EC NOTEXT
+  constants EVENTID_PICTURE_DBLCLICK type I value 3. "#EC NOTEXT
+  constants EVENTID_CONTROL_CLICK type I value 4. "#EC NOTEXT
+  constants EVENTID_CONTROL_DBLCLICK type I value 5. "#EC NOTEXT
+  constants DISPLAY_MODE_NORMAL type I value 0. "#EC NOTEXT
+  constants DISPLAY_MODE_STRETCH type I value 1. "#EC NOTEXT
+  constants DISPLAY_MODE_FIT type I value 2. "#EC NOTEXT
+  constants DISPLAY_MODE_NORMAL_CENTER type I value 3. "#EC NOTEXT
+  constants DISPLAY_MODE_FIT_CENTER type I value 4. "#EC NOTEXT
+  constants EVENTID_CONTEXT_MENU type I value 1. "#EC NOTEXT
+  constants EVENTID_CONTEXT_MENU_SELECTED type I value 6. "#EC NOTEXT
+  data DISPLAY_MODE type I read-only .
+
+  events PICTURE_CLICK
+    exporting
+      value(MOUSE_POS_X) type I
+      value(MOUSE_POS_Y) type I .
+  events PICTURE_DBLCLICK
+    exporting
+      value(MOUSE_POS_X) type I
+      value(MOUSE_POS_Y) type I .
+  events CONTROL_CLICK
+    exporting
+      value(MOUSE_POS_X) type I
+      value(MOUSE_POS_Y) type I .
+  events CONTROL_DBLCLICK
+    exporting
+      value(MOUSE_POS_X) type I
+      value(MOUSE_POS_Y) type I .
+  events CONTEXT_MENU .
+  events CONTEXT_MENU_SELECTED
+    exporting
+      value(FCODE) type C .
+  type-pools CNDD .
+  events ONGETFLAVOR
+    exporting
+      value(FLAVORS) type CNDD_FLAVORS
+      value(DRAGDROPOBJ) type ref to CL_DRAGDROPOBJECT
+      value(CONTROL_POS_X) type I
+      value(CONTROL_POS_Y) type I
+      value(PICTURE_POS_X) type I
+      value(PICTURE_POS_Y) type I .
+  events ONDRAG
+    exporting
+      value(DRAGDROPOBJ) type ref to CL_DRAGDROPOBJECT
+      value(CONTROL_POS_X) type I
+      value(CONTROL_POS_Y) type I
+      value(PICTURE_POS_X) type I
+      value(PICTURE_POS_Y) type I .
+  events ONDROP
+    exporting
+      value(DRAGDROPOBJ) type ref to CL_DRAGDROPOBJECT
+      value(CONTROL_POS_X) type I
+      value(CONTROL_POS_Y) type I
+      value(PICTURE_POS_X) type I
+      value(PICTURE_POS_Y) type I .
+  events ONDROPCOMPLETE
+    exporting
+      value(DRAGDROPOBJ) type ref to CL_DRAGDROPOBJECT
+      value(CONTROL_POS_X) type I
+      value(CONTROL_POS_Y) type I
+      value(PICTURE_POS_X) type I
+      value(PICTURE_POS_Y) type I .
+
+  methods SET_DRAGDROP_CONTROL
+    importing
+      !DRAGDROP type ref to CL_DRAGDROP
+    exceptions
+      ERROR .
+  methods CONSTRUCTOR
+    importing
+      !LIFETIME type I optional
+      value(SHELLSTYLE) type I optional
+      value(PARENT) type ref to CL_GUI_CONTAINER
+      value(NAME) type STRING optional
+    exceptions
+      ERROR .
+  methods LOAD_PICTURE_FROM_URL
+    importing
+      !URL type C
+    exporting
+      !RESULT type I
+    exceptions
+      ERROR .
+  methods CLEAR_PICTURE
+    exceptions
+      ERROR .
+  methods SET_DISPLAY_MODE
+    importing
+      !DISPLAY_MODE type I
+    exceptions
+      ERROR .
+  methods LOAD_PICTURE_FROM_SAP_ICONS
+    importing
+      !ICON type C
+    exceptions
+      ERROR .
+  methods DISPLAY_CONTEXT_MENU
+    importing
+      !CONTEXT_MENU type ref to CL_CTMENU
+    exceptions
+      ERROR .
+  methods SET_3D_BORDER
+    importing
+      !BORDER type I
+    exceptions
+      ERROR .
+  methods SET_DRAGDROP_PICTURE
+    importing
+      !DRAGDROP type ref to CL_DRAGDROP
+    exceptions
+      ERROR .
+  methods LOAD_PICTURE_FROM_URL_ASYNC
+    importing
+      !URL type C
+    exceptions
+      ERROR .
+  methods SET_ALT_TEXT
+    importing
+      !TEXT type STRING
+    exceptions
+      ERROR .
+  methods SET_TOOLTIP
+    importing
+      !TEXT type STRING
+    exceptions
+      ERROR .
+
+  methods DISPATCH
+    redefinition .
+  methods SET_REGISTERED_EVENTS
+    redefinition .

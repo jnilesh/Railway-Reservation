@@ -1,0 +1,30 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0811I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0811  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0811 INPUT.
+CASE SY-UCOMM.
+  WHEN 'VIEW'.
+    SELECT * FROM ZG6TRAIN_LIST INTO
+      TABLE ITAB.
+      REFRESH CONTROL 'TC1' FROM SCREEN '811'.
+  WHEN 'INSERT'.
+       IF LS1 = 'X'.
+        INSERT ZG6TRAIN_LIST FROM WA.
+        IF SY-SUBRC = 0.
+        MESSAGE 'DATA INSERTED' TYPE 'I'.
+        ENDIF.
+        REFRESH CONTROL 'TC1' FROM SCREEN '0811'.
+      ELSE.
+        APPEND INITIAL LINE TO ITAB.
+        TC1-LINES = LINES( ITAB ).
+      ENDIF.
+      REFRESH CONTROL 'TC1' FROM SCREEN '0811'.
+
+
+ENDCASE.
+ENDMODULE.

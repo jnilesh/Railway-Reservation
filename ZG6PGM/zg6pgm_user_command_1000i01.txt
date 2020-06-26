@@ -1,0 +1,51 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_1000I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_1000  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_1000 INPUT.
+CASE OK_CODE.
+   WHEN 'INSERT'.
+      INSERT INTO ZG6TRAIN_LIST VALUES WA.
+      IF SY-SUBRC EQ 0.
+        MESSAGE 'RECORD INSERTED SUCCESSFULLY' TYPE 'I'.
+      ELSE.
+        MESSAGE 'RECORD NOT INSERTED' TYPE 'I'.
+      ENDIF.
+
+    WHEN 'UPDATE'.
+      UPDATE ZG6TRAIN_LIST FROM WA.
+      IF SY-SUBRC EQ 0.
+        MESSAGE 'RECORD UPDATED' TYPE 'I'.
+         ELSE.
+        MESSAGE 'RECORD NOT UPDATED' TYPE 'I'.
+      ENDIF.
+
+    WHEN 'DISPLAY'.
+      IF WA-TRAIN_NO = ZG6TRAIN_LIST-TRAIN_NO.
+        MESSAGE 'DATA DISPLAYED' TYPE 'I'.
+    SELECT TRAIN_NO TRAIN_NAME TRAIN_TYPE RUNDAYS DEPT_TIME ARR_TIME SOURCE DESTINATION PRICE
+    FROM ZG6TRAIN_LIST
+    INTO CORRESPONDING FIELDS OF WA
+    WHERE TRAIN_NO = WA-TRAIN_NO.
+    ENDSELECT.
+      ENDIF.
+
+    WHEN 'DELETE'.
+      DELETE FROM ZG6TRAIN_LIST WHERE TRAIN_NO = WA-TRAIN_NO.
+      IF SY-SUBRC EQ 0.
+        MESSAGE 'DELETED RECORD' TYPE 'I'.
+      ELSE.
+        MESSAGE 'RECORD NOT EXIST TO DELETE' TYPE 'I'.
+      ENDIF.
+
+    WHEN 'CLEAR'.
+      CLEAR WA.
+
+    WHEN 'EXIT'.
+      LEAVE TO SCREEN 0.
+ENDCASE.
+ENDMODULE.

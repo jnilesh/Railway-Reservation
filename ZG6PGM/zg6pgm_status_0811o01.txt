@@ -1,0 +1,16 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_STATUS_0811O01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      MODULE  STATUS_0811  OUTPUT
+*&---------------------------------------------------------------------*
+*       TEXT
+*----------------------------------------------------------------------*
+MODULE STATUS_0811 OUTPUT.
+
+  SELECT * FROM ZG6FOOD_DETAILS INTO TABLE IT_FDETAIL.
+  SELECT * FROM ZG6TRAIN_BOOKING INTO TABLE IT_BOOK.
+  SELECT * FROM ZG6TRAIN_LIST INTO TABLE ITAB.
+
+*  SET TITLEBAR 'XXX'.
+ENDMODULE.

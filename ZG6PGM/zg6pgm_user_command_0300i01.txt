@@ -1,0 +1,26 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0300I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0300  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0300 INPUT.
+CASE SY-UCOMM.
+    WHEN 'LOGIN'.
+      SELECT SINGLE USER_ID PASSWORD NAME MAIL_ID CONTACT_NO STATE AGE ADDRESS BLOCK
+        FROM ZG6_USER_REG INTO CORRESPONDING FIELDS OF WA_USER WHERE USER_ID = USER_ID .
+      IF WA_USER-PASSWORD <> PASSWORD OR WA_USER-USER_ID <> USER_ID.
+        MESSAGE 'ID OR PASSWORD INCORRECT' TYPE 'I'.
+        CLEAR: USER_ID , PASSWORD .
+      ELSEIF WA_USER-BLOCK = '1'.
+        MESSAGE 'USER BLOCKED BY ADMIN' TYPE 'I'.
+      ELSE.
+        LEAVE TO SCREEN 350.
+      ENDIF.
+    WHEN 'REGISTER'.
+      LEAVE TO SCREEN 200.
+
+ENDCASE.
+ENDMODULE.

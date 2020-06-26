@@ -1,0 +1,33 @@
+class CL_GUI_CUSTOM_CONTAINER definition
+  public
+  inheriting from CL_GUI_CONTAINER
+  create public .
+
+*"* public components of class CL_GUI_CUSTOM_CONTAINER
+*"* do not include other source files here!!!
+public section.
+
+  methods CONSTRUCTOR
+    importing
+      value(PARENT) type ref to CL_GUI_CONTAINER optional
+      value(CONTAINER_NAME) type C
+      value(STYLE) type I optional
+      value(LIFETIME) type I default LIFETIME_DEFAULT
+      value(REPID) type SYREPID optional
+      value(DYNNR) type SYDYNNR optional
+      value(NO_AUTODEF_PROGID_DYNNR) type C optional
+    exceptions
+      CNTL_ERROR
+      CNTL_SYSTEM_ERROR
+      CREATE_ERROR
+      LIFETIME_ERROR
+      LIFETIME_DYNPRO_DYNPRO_LINK .
+
+  methods GET_HEIGHT
+    redefinition .
+  methods GET_WIDTH
+    redefinition .
+  methods LINK
+    redefinition .
+  methods SET_NAME
+    redefinition .

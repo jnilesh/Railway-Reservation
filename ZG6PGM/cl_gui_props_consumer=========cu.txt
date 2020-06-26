@@ -1,0 +1,69 @@
+class CL_GUI_PROPS_CONSUMER definition
+  public
+  create protected .
+
+*"* public components of class CL_GUI_PROPS_CONSUMER
+*"* do not include other source files here!!!
+public section.
+
+  interfaces IF_GUI_DYNAMIC_DATA .
+
+  class-data CONTEXT_ID type EUDB-NAME read-only .
+  class-data CATT_ACTIVE type SYCHAR01 read-only .
+  class-data GUI_IS_RUNNING type SYCHAR01 read-only .
+  class-data IS_INITIALIZED type SYCHAR01 read-only .
+  class-data WWW_ACTIVE type SYCHAR01 read-only .
+
+  class-events GLOBAL_PROP_CHANGE .
+  type-pools CNTL .
+  class-events LIST_DIMENSION_CHANGE
+    exporting
+      value(DIMENSION) type CNTL_LIST_DIM optional .
+  class-events COLOR_CHANGE
+    exporting
+      value(COLORS) type CNTL_COLORS optional .
+  class-events GUI_DATA_REQUEST .
+  class-events METRIC_FACTORS_CHANGE
+    exporting
+      value(METRIC_FACTORS) type CNTL_METRIC_FACTORS optional .
+
+  class-methods SET_DEFAULT_FACTORS
+    importing
+      value(ACTIVEX) type SYCHAR01 default 'X'
+      value(JAVABEAN) type SYCHAR01 optional
+      value(WWW_ACTIVE) type SYCHAR01 optional
+      value(CATT_ACTIVE) type SYCHAR01 optional
+      value(GUI_IS_RUNNING) type SYCHAR01 optional .
+  class-methods CREATE_CONSUMER
+    importing
+      !NAMESPACE type STRING default 'GUI'
+    returning
+      value(CONSUMER) type ref to CL_GUI_PROPS_CONSUMER .
+  class-methods CLASS_CONSTRUCTOR .
+  methods SET_METRIC_FACTORS
+    importing
+      !METRIC_FACTORS type CNTL_METRIC_FACTORS .
+  class-methods HANDLE_COLOR_CHANGE
+    importing
+      !COLORS type CNTL_COLORS .
+  methods GET_METRIC_FACTORS
+    returning
+      value(METRIC_FACTORS) type CNTL_METRIC_FACTORS .
+  class-methods GET_COLORS
+    exporting
+      value(COLORS) type CNTL_COLORS
+    exceptions
+      NOT_AVAILABLE .
+  methods CONSTRUCTOR
+    importing
+      !NAMESPACE type STRING default 'GUI' .
+  class-methods HANDLE_LIST_DIM_CHANGE
+    importing
+      !DIMENSION type CNTL_LIST_DIM .
+  class-methods GET_LIST_DIMENSION
+    returning
+      value(DIMENSION) type CNTL_LIST_DIM
+    exceptions
+      NOT_AVAILABLE .
+  class-methods INIT .
+  class-methods SYNC_GUI_DATA .

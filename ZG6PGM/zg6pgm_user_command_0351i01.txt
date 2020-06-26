@@ -1,0 +1,19 @@
+*----------------------------------------------------------------------*
+***INCLUDE ZG6PGM_USER_COMMAND_0351I01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0351  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0351 INPUT.
+CASE SY-UCOMM.
+  WHEN 'UPDATE'.
+    UPDATE ZG6_USER_REG FROM WA_USER.
+    IF SY-SUBRC = 0.
+      MESSAGE 'PROFILE UPDATED' TYPE 'I'.
+    ENDIF.
+   WHEN 'BACK'.
+    LEAVE TO SCREEN 350.
+ENDCASE.
+ENDMODULE.

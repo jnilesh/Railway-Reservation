@@ -1,0 +1,27 @@
+class CX_SY_DYN_CALL_ERROR definition
+  public
+  inheriting from CX_DYNAMIC_CHECK
+  abstract
+  create public .
+
+*"* public components of class CX_SY_DYN_CALL_ERROR
+*"* do not include other source files here!!!
+public section.
+
+  constants CX_SY_DYN_CALL_ERROR type SOTR_CONC
+ value '94D2C63BEACF517BE10000000A11447B'. "#EC NOTEXT
+  data CLASSNAME type STRING read-only .
+  data METHODNAME type STRING read-only .
+  data FUNCTION type STRING read-only .
+  data FORM type STRING read-only .
+  data PROGNAME type STRING read-only .
+
+  methods CONSTRUCTOR
+    importing
+      !TEXTID like TEXTID optional
+      !PREVIOUS like PREVIOUS optional
+      value(CLASSNAME) type STRING optional
+      value(METHODNAME) type STRING optional
+      value(FUNCTION) type STRING optional
+      value(FORM) type STRING optional
+      value(PROGNAME) type STRING optional .

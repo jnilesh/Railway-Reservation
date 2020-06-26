@@ -1,0 +1,26 @@
+*" components of interface IF_GUI_DYNAMIC_DATA
+interface IF_GUI_DYNAMIC_DATA
+  public .
+
+
+*" methods
+methods:
+  ON_EXECUTE_NODE
+      importing
+        !NAME type STRING
+      exceptions
+        ERROR_EXECUTE ,
+  ON_NEW_NODE
+      importing
+        !NAME type STRING
+      returning
+        value(RETVAL) type ref to IF_GUI_DYNAMIC_DATA
+      exceptions
+        ERROR_CREATE ,
+  ON_VALUE
+      importing
+        !NAME type STRING
+        !VALUE type STRING
+      exceptions
+        ERROR_VALUE .
+endinterface.

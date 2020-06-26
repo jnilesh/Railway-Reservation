@@ -1,0 +1,87 @@
+*&---------------------------------------------------------------------*
+*& Module Pool       ZG6PGM
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+
+INCLUDE ZG6TOP                                  .    " global Data
+
+* INCLUDE ZG6O01                                  .  " PBO-Modules
+* INCLUDE ZG6I01                                  .  " PAI-Modules
+* INCLUDE ZG6F01                                  .  " FORM-Routines
+
+
+INCLUDE zg6pgm_user_command_0200i01.
+
+INCLUDE zg6pgm_user_command_0300i01.
+
+INCLUDE zg6pgm_user_command_0800i01.
+
+INCLUDE zg6pgm_user_command_0700i01.
+
+INCLUDE zg6pgm_user_command_1000i01.
+
+INCLUDE zg6pgm_user_command_0704i01.
+
+INCLUDE zg6pgm_status_0704o01.
+
+INCLUDE zg6pgm_user_command_0810i01.
+
+INCLUDE zg6pgm_status_0811o01.
+
+INCLUDE zg6pgm_status_0810o01.
+
+INCLUDE zg6pgm_user_command_0811i01.
+
+INCLUDE zg6pgm_deletei01.
+
+INCLUDE zg6pgm_blocki01.
+
+INCLUDE zg6pgm_user_command_0812i01.
+
+INCLUDE zg6pgm_user_command_0813i01.
+
+INCLUDE zg6pgm_delete_updatei01.
+
+INCLUDE zg6pgm_del_updatei01.
+
+INCLUDE zg6pgm_status_1001o01.
+
+INCLUDE zg6pgm_status_0705o01.
+
+INCLUDE zg6pgm_booki01.
+
+INCLUDE zg6pgm_user_command_1004i01.
+
+INCLUDE zg6pgm_user_command_1005i01.
+
+INCLUDE zg6pgm_user_command_1006i01.
+
+INCLUDE zg6pgm_status_0813o01.
+
+INCLUDE zg6pgm_status_0812o01.
+
+INCLUDE zg6pgm_status_0200o01.
+
+INCLUDE zg6pgm_exiti01.
+
+INCLUDE zg6pgm_exitbooki01.
+
+INCLUDE zg6pgm_exitfoodi01.
+
+INCLUDE zg6pgm_status_0800o01.
+
+INCLUDE zg6pgm_user_command_0351i01.
+
+INCLUDE zg6pgm_exit1i01.
+
+INCLUDE zg6pgm_status_0200o02.
+
+INCLUDE zg6pgm_user_command_0750i01.
+
+INCLUDE zg6pgm_status_0750o01.
+
+INCLUDE zg6pgm_user_command_0301i01.

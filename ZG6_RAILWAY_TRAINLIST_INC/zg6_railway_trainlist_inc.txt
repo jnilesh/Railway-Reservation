@@ -1,0 +1,23 @@
+*&---------------------------------------------------------------------*
+*&  Include  ZG6_RAILWAY_TRAINLIST_INC
+*&---------------------------------------------------------------------*
+
+DATA: LD_FIELD   TYPE VRM_ID,
+      IT_LISTBOX TYPE VRM_VALUES,
+      WA_LISTBOX LIKE LINE OF IT_LISTBOX.
+
+TYPES : BEGIN OF TYSOURCE,
+          SOURCE TYPE ZG6SRCSTN,
+        END OF TYSOURCE.
+
+TYPES : BEGIN OF TYDESTN,
+          DESTINATION TYPE ZG6DSTNSTN,
+        END OF TYDESTN.
+
+DATA: ITSOURCE TYPE STANDARD TABLE OF TYSOURCE,
+      WASOURCE TYPE TYSOURCE.
+
+DATA: ITDESTN TYPE STANDARD TABLE OF TYDESTN,
+      WADESTN TYPE TYDESTN.
+
+DATA: TRAIN_NO TYPE ZG6TRNNO.
